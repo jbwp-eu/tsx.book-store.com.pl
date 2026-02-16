@@ -74,10 +74,16 @@ app.post("/api/create-payment-intent", async (req: Request, res: Response, next:
 const projectRoot = path.resolve(process.cwd());
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.resolve(projectRoot, "frontend/dist")));
+  const frontendDist = path.resolve(projectRoot, "frontend", "dist");
+  app.use(express.static(frontendDist));
 
-  app.get("/(.*)", (_req: Request, res: Response) => {
-    res.sendFile(path.resolve(projectRoot, "frontend", "dist", "index.html"));
+  // SPA fallback: after static, serve index.html for GET (no path pattern = no path-to-regexp)
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.method === "GET") {
+      res.sendFile(path.join(frontendDist, "index.html"));
+    } else {
+      next();
+    }
   });
 } else {
   app.get("/", (_req: Request, res: Response) => {
