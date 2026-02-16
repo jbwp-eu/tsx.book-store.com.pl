@@ -1,0 +1,216 @@
+import { useAppSelector } from "@/store/hook";
+import { type RootState } from "@/store/store";
+import dictionary from "@/dictionaries/dictionary";
+import { type ObjectDict } from "@/dictionaries/dictionary";
+import { NavLink, useLoaderData, type LoaderFunction } from "react-router-dom";
+import { toast } from "sonner";
+import Message from "@/components/Message";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { formatCurrency, formateDate, formatId } from "@/utils/formatUtils";
+import { Button } from "@/components/ui/button";
+import type { MessageProps, Order } from "@/types";
+import { Card } from "@/components/ui/card";
+import { X } from "lucide-react";
+
+const loader =
+  (language: string): LoaderFunction =>
+  async () => {
+    const token = localStorage.getItem("token");
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/orders/mine?language=${language}`,
+      {
+        headers: {
+          authorization: "Bearer " + token,
+        },
+      }
+    );
+    if (!response.ok) {
+      const resData = await response.json();
+      // throw new Error(resData.message);
+      toast.error(resData.message);
+      return resData;
+    } else {
+      return response;
+    }
+  };
+
+const OrdersPage = () => {
+  const { language } = useAppSelector((state: RootState) => state.ui);
+
+  const {
+    title,
+    titlePL,
+    id,
+    idPL,
+    date,
+    datePL,
+    total,
+    totalPL,
+    paid,
+    paidPL,
+    delivered,
+    deliveredPL,
+    actions,
+    actionsPL,
+    details,
+    detailsPL,
+  } = dictionary.orders as ObjectDict;
+
+  const data = useLoaderData<Order[] | MessageProps>();
+
+  let content;
+
+  if ("message" in data) {
+    content = <Message info>{data.message}</Message>;
+  } else {
+    content = (
+      <div>
+        <h2 className="h2-semibold py-4">
+          {language === "en" ? title : titlePL}
+        </h2>
+        <div>
+          <Table className="hidden md:table">
+            <TableHeader>
+              <TableRow>
+                <TableHead>{language === "en" ? id : idPL}</TableHead>
+                <TableHead className="text-center">
+                  {language === "en" ? date : datePL}
+                </TableHead>
+                <TableHead className="text-center">
+                  {language === "en" ? total : totalPL}
+                </TableHead>
+                <TableHead className="text-center">
+                  {language === "en" ? paid : paidPL}
+                </TableHead>
+                <TableHead className="text-center">
+                  {language === "en" ? delivered : deliveredPL}
+                </TableHead>
+                <TableHead className="text-right">
+                  {language === "en" ? actions : actionsPL}{" "}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.map((order) => (
+                <TableRow key={order.id}>
+                  <TableCell>{formatId(order.id)}</TableCell>
+                  <TableCell className="text-center">
+                    {/* {order.createdAt.toString().substring(0, 10)} */}
+                    {formateDate(order.createdAt).substring(0, 17)}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {formatCurrency(order.totalPrice)}
+                  </TableCell>
+                  <TableCell>
+                    <span className="flex justify-center">
+                      {order.isPaid && order.paidAt ? (
+                        formateDate(order.paidAt)
+                      ) : (
+                        // new Date(order.paidAt).toLocaleString()
+                        <X className="text-red-600" />
+                      )}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-center ">
+                    <span className="flex justify-center">
+                      {order.isDelivered && order.deliveredAt ? (
+                        formateDate(order.deliveredAt).substring(0, 10)
+                      ) : (
+                        <X className="text-red-600" />
+                      )}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button asChild variant="outline">
+                      <NavLink to={`/order/${order.id}/checkout`}>
+                        {language === "en" ? details : detailsPL}
+                      </NavLink>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          {data.map((order) => (
+            <Card key={order.id} className="block md:hidden p-4 mb-4">
+              <Table>
+                <TableBody>
+                  <TableRow>
+                    <TableHead>{language === "en" ? id : idPL}</TableHead>
+                    <TableCell>{formatId(order.id)}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableHead> {language === "en" ? date : datePL}</TableHead>
+                    <TableCell>
+                      {formateDate(order.createdAt).substring(0, 17)}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableHead>
+                      {" "}
+                      {language === "en" ? total : totalPL}
+                    </TableHead>
+                    <TableCell> {formatCurrency(order.totalPrice)}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableHead> {language === "en" ? paid : paidPL}</TableHead>
+                    <TableCell>
+                      <span>
+                        {order.isPaid && order.paidAt ? (
+                          formateDate(order.paidAt)
+                        ) : (
+                          <X className="text-red-600" />
+                        )}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableHead>
+                      {language === "en" ? delivered : deliveredPL}
+                    </TableHead>
+                    <TableCell>
+                      {" "}
+                      <span>
+                        {order.isPaid && order.paidAt ? (
+                          formateDate(order.paidAt)
+                        ) : (
+                          <X className="text-red-600" />
+                        )}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableHead>
+                      {" "}
+                      {language === "en" ? actions : actionsPL}
+                    </TableHead>
+                    <TableCell>
+                      <Button asChild variant="outline">
+                        <NavLink to={`/order/${order.id}/checkout`}>
+                          {language === "en" ? details : detailsPL}
+                        </NavLink>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return <>{content}</>;
+};
+
+OrdersPage.loader = loader;
+
+export default OrdersPage;
