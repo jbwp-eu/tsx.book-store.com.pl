@@ -76,7 +76,7 @@ const projectRoot = path.resolve(process.cwd());
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.resolve(projectRoot, "frontend/dist")));
 
-  app.get("*", (_req: Request, res: Response) => {
+  app.get("/(.*)", (_req: Request, res: Response) => {
     res.sendFile(path.resolve(projectRoot, "frontend", "dist", "index.html"));
   });
 } else {
