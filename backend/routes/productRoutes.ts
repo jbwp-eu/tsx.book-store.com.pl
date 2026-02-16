@@ -7,10 +7,10 @@ import {
   updateProduct,
   createProductReview,
   getFeaturedProducts,
-} from "../controllers/productController";
+} from "../controllers/productController.js";
 
-import { admin, protect } from "../middleware/authMiddleware";
-import fileUpload from "../middleware/file-upload-aws";
+import { admin, protect } from "../middleware/authMiddleware.js";
+import fileUpload from "../middleware/file-upload-aws.js";
 
 const router = Router();
 

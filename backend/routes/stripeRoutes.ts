@@ -1,7 +1,7 @@
 import express from "express";
 import Stripe from "stripe";
-import { sendPurchaseReceipt } from "../utils/purchaseReceipt";
-import Order from "../models/order";
+import { sendPurchaseReceipt } from "../utils/purchaseReceipt.js";
+import Order from "../models/order.js";
 
 const router = express.Router();
 

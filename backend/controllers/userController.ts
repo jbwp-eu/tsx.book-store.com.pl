@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import Order from "../models/order";
-import ProductReview from "../models/productReview";
-import User from "../models/user";
-import { createJSONToken } from "../utils/token";
+import Order from "../models/order.js";
+import ProductReview from "../models/productReview.js";
+import User from "../models/user.js";
+import { createJSONToken } from "../utils/token.js";
 
 export const registerUser = async (
   req: Request,

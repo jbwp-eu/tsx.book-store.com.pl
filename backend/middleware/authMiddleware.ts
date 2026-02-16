@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import User from "../models/user";
-import { validateJSONToken } from "../utils/token";
+import User from "../models/user.js";
+import { validateJSONToken } from "../utils/token.js";
 
 export const protect = async (
   req: Request,

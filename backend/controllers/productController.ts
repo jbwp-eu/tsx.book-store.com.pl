@@ -2,11 +2,11 @@ import { Request, Response, NextFunction } from "express";
 import fs from "fs";
 import { Op } from "sequelize";
 import { getSignedUrl } from "@aws-sdk/cloudfront-signer";
-import Product from "../models/product";
-import ProductReview from "../models/productReview";
-import type { ProductInstance } from "../models/product";
-import type { ProductReviewInstance } from "../models/productReview";
-import { uploadFile, deleteFile } from "../config/aws-s3";
+import Product from "../models/product.js";
+import ProductReview from "../models/productReview.js";
+import type { ProductInstance } from "../models/product.js";
+import type { ProductReviewInstance } from "../models/productReview.js";
+import { uploadFile, deleteFile } from "../config/aws-s3.js";
 
 type ProductWithReviews = ProductInstance & {
   ProductReviews: ProductReviewInstance[];

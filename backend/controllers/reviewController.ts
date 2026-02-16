@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import sequelize from "../config/db";
-import Product from "../models/product";
-import ProductReview from "../models/productReview";
-import type { ProductReviewInstance } from "../models/productReview";
-import type { ProductInstance } from "../models/product";
-import User from "../models/user";
+import sequelize from "../config/db.js";
+import Product from "../models/product.js";
+import ProductReview from "../models/productReview.js";
+import type { ProductReviewInstance } from "../models/productReview.js";
+import type { ProductInstance } from "../models/product.js";
+import User from "../models/user.js";
 
 type ProductReviewWithProduct = ProductReviewInstance & { Product: ProductInstance };
 type ProductWithReviews = ProductInstance & {

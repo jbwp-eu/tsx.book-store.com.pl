@@ -1,9 +1,9 @@
 import nodemailer from "nodemailer";
 import { Response, NextFunction } from "express";
-import Order from "../models/order";
-import User from "../models/user";
-import type { OrderInstance } from "../types";
-import type { UserInstance } from "../types";
+import Order from "../models/order.js";
+import User from "../models/user.js";
+import type { OrderInstance } from "../types/index.js";
+import type { UserInstance } from "../types/index.js";
 
 type OrderWithUser = OrderInstance & { User: UserInstance };
 

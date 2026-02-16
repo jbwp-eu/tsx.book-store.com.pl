@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import type { JwtPayload } from "../types";
+import type { JwtPayload } from "../types/index.js";
 
 export function createJSONToken(userId: string): string {
   const secret = process.env.JWT_SECRET;

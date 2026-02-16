@@ -1,10 +1,10 @@
 import express from "express";
-import { admin, protect } from "../middleware/authMiddleware";
+import { admin, protect } from "../middleware/authMiddleware.js";
 import {
   deleteReview,
   getMyReviews,
   getReviews,
-} from "../controllers/reviewController";
+} from "../controllers/reviewController.js";
 
 const router = express.Router();
 

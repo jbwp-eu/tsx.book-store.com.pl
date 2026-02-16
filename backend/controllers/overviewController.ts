@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import sequelize from "../config/db";
-import Order from "../models/order";
-import Product from "../models/product";
-import ProductReview from "../models/productReview";
-import User from "../models/user";
+import sequelize from "../config/db.js";
+import Order from "../models/order.js";
+import Product from "../models/product.js";
+import ProductReview from "../models/productReview.js";
+import User from "../models/user.js";
 
 export const getOverviewData = async (
   _req: Request,

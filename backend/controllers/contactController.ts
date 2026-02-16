@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import nodemailer from "nodemailer";
-import Message from "../models/message";
+import Message from "../models/message.js";
 
 export const createMessage = async (
   req: Request,

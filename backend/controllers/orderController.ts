@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import Product from "../models/product";
-import { calcPrices } from "../utils/calcPrices";
-import Order from "../models/order";
-import OrderItem from "../models/orderItem";
-import sequelize from "../config/db";
-import User from "../models/user";
-import type { ShippingAddress } from "../types";
+import Product from "../models/product.js";
+import { calcPrices } from "../utils/calcPrices.js";
+import Order from "../models/order.js";
+import OrderItem from "../models/orderItem.js";
+import sequelize from "../config/db.js";
+import User from "../models/user.js";
+import type { ShippingAddress } from "../types/index.js";
 
 interface OrderItemFromClient {
   id: string;
