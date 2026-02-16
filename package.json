@@ -8,6 +8,8 @@
     "server": "tsx watch backend/server.ts",
     "build:backend": "tsc -p backend/tsconfig.json",
     "start:backend": "node backend/dist/server.js",
+    "seed": "tsx backend/seeder.ts -i",
+    "seed:destroy": "tsx backend/seeder.ts -d",
     "client": "npm run dev --prefix frontend",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently \"npm run server\" \"npm run client\""

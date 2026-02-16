@@ -1,11 +1,11 @@
 import "colors";
-import Product, { ProductCreationAttributes } from "./models/product";
-import products from "./products";
-import User, { UserCreationAttributes } from "./models/user";
-import users from "./users";
-import Order from "./models/order";
-import OrderItem from "./models/orderItem";
-import Message from "./models/message";
+import Product, { ProductCreationAttributes } from "./models/product.js";
+import products from "./products.js";
+import User, { UserCreationAttributes } from "./models/user.js";
+import users from "./users.js";
+import Order from "./models/order.js";
+import OrderItem from "./models/orderItem.js";
+import Message from "./models/message.js";
 
 const importData = async (): Promise<void> => {
   try {
