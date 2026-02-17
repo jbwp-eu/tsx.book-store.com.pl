@@ -21,8 +21,8 @@ import Order from "./models/order.js";
 import OrderItem from "./models/orderItem.js";
 import Message from "./models/message.js";
 
-ProductReview.belongsTo(Product);
-ProductReview.belongsTo(User);
+ProductReview.belongsTo(Product, { foreignKey: "productId" });
+ProductReview.belongsTo(User, { foreignKey: "userId" });
 Order.belongsTo(User);
 OrderItem.belongsTo(Order);
 
