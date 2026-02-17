@@ -23,13 +23,21 @@ import Message from "./models/message.js";
 
 ProductReview.belongsTo(Product, { foreignKey: "productId" });
 ProductReview.belongsTo(User, { foreignKey: "userId" });
-Order.belongsTo(User);
-OrderItem.belongsTo(Order);
+Order.belongsTo(User, { foreignKey: "userId" });
+OrderItem.belongsTo(Order, { foreignKey: "orderId" });
 
-Product.hasMany(ProductReview, { onDelete: "CASCADE", hooks: true });
-User.hasMany(ProductReview);
-User.hasMany(Order);
-Order.hasMany(OrderItem, { onDelete: "CASCADE", hooks: true });
+Product.hasMany(ProductReview, {
+  foreignKey: "productId",
+  onDelete: "CASCADE",
+  hooks: true,
+});
+User.hasMany(ProductReview, { foreignKey: "userId" });
+User.hasMany(Order, { foreignKey: "userId" });
+Order.hasMany(OrderItem, {
+  foreignKey: "orderId",
+  onDelete: "CASCADE",
+  hooks: true,
+});
 
 void Message; // ensure model is registered for sequelize.sync()
 
@@ -52,24 +60,29 @@ app.use("/api/contact", contactRoutes);
 
 app.use("/uploads", express.static("uploads"));
 
-app.post("/api/create-payment-intent", async (req: Request, res: Response, next: NextFunction) => {
-  const { id, amount, currency } = req.body;
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY_TEST_MODE as string);
+app.post(
+  "/api/create-payment-intent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id, amount, currency } = req.body;
+    const stripe = new Stripe(
+      process.env.STRIPE_SECRET_KEY_TEST_MODE as string,
+    );
 
-  try {
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency,
-      metadata: { orderId: id },
-    });
-    res.send({
-      clientSecret: paymentIntent.client_secret,
-    });
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
-});
+    try {
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount,
+        currency,
+        metadata: { orderId: id },
+      });
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  },
+);
 
 const projectRoot = path.resolve(process.cwd());
 
@@ -92,18 +105,28 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.use((req: Request, res: Response, next: NextFunction) => {
-  const error = new Error(`Could not find this route = ${req.originalUrl}`) as Error & { statusCode?: number };
+  const error = new Error(
+    `Could not find this route = ${req.originalUrl}`,
+  ) as Error & { statusCode?: number };
   res.status(404);
   error.statusCode = 404;
   next(error);
 });
 
-app.use((err: Error & { statusCode?: number }, _req: Request, res: Response, _next: NextFunction) => {
-  console.log("err:", err);
-  const statusCode = err.statusCode ?? (res.statusCode !== 200 ? res.statusCode : 500) ?? 500;
-  const message = err.message || "An unknown error occurred !";
-  res.status(statusCode).json({ message });
-});
+app.use(
+  (
+    err: Error & { statusCode?: number },
+    _req: Request,
+    res: Response,
+    _next: NextFunction,
+  ) => {
+    console.log("err:", err);
+    const statusCode =
+      err.statusCode ?? (res.statusCode !== 200 ? res.statusCode : 500) ?? 500;
+    const message = err.message || "An unknown error occurred !";
+    res.status(statusCode).json({ message });
+  },
+);
 
 app.listen(port, () => {
   console.log(`Server is listening on port:${port}`);
