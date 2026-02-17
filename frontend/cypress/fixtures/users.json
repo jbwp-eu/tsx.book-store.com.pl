@@ -1,0 +1,17 @@
+{
+  "admin": {
+    "email": "admin@test.pl",
+    "password": "1234",
+    "role": "admin"
+  },
+  "regular": {
+    "email": "user@example.com",
+    "password": "user123",
+    "role": "user"
+  },
+  "testUser": {
+    "email": "test@example.com",
+    "password": "test123",
+    "role": "user"
+  }
+}

@@ -13,7 +13,7 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { type ObjectDict } from "@/dictionaries/dictionary";
-import { withFormik, type FormikProps } from "formik";
+import { withFormik, type FormikProps, type FormikHelpers } from "formik";
 import * as Yup from "yup";
 
 interface FormValues {
@@ -365,13 +365,14 @@ const AuthRegisterForm = () => {
             ),
           }
     ),
-    handleSubmit({ email, name, password }: FormValues) {
+    handleSubmit({ email, name, password }: FormValues, { resetForm }: FormikHelpers<FormValues>) {
       const formData = new FormData();
       formData.append("email", email);
       formData.append("name", name);
       formData.append("password", password);
 
       submit(formData, { method: "post" });
+      resetForm();
     },
   })(MyForm);
 

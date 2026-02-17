@@ -1,0 +1,40 @@
+{
+  "sampleProduct": {
+    "id": "1",
+    "title": "Sample Book",
+    "author": "Sample Author",
+    "price": 29.99,
+    "description": "A sample book for testing purposes",
+    "category": "Fiction",
+    "stock": 10
+  },
+  "products": [
+    {
+      "id": "1",
+      "title": "The Great Gatsby",
+      "author": "F. Scott Fitzgerald",
+      "price": 12.99,
+      "description": "A classic American novel",
+      "category": "Fiction",
+      "stock": 50
+    },
+    {
+      "id": "2",
+      "title": "To Kill a Mockingbird",
+      "author": "Harper Lee",
+      "price": 14.99,
+      "description": "A powerful story of racial injustice",
+      "category": "Fiction",
+      "stock": 30
+    },
+    {
+      "id": "3",
+      "title": "1984",
+      "author": "George Orwell",
+      "price": 13.99,
+      "description": "A dystopian social science fiction novel",
+      "category": "Fiction",
+      "stock": 25
+    }
+  ]
+}
