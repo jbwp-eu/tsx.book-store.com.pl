@@ -24,7 +24,7 @@ declare global {
 }
 
 // Cypress is a value at runtime; access via globalThis to avoid "namespace as value" type error
-const CypressRuntime = (globalThis as unknown as { Cypress: { Commands: { add: (name: string, fn: (...args: unknown[]) => void) => void }; config: () => { env?: { VITE_BACKEND_URL?: string } } } }).Cypress
+const CypressRuntime = (globalThis as unknown as { Cypress: { Commands: { add: (name: string, fn: any) => void }; config: () => { env?: { VITE_BACKEND_URL?: string } } } }).Cypress
 
 /**
  * Login helper command
