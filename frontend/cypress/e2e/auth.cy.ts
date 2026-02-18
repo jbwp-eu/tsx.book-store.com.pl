@@ -21,7 +21,7 @@ describe('Authentication', () => {
       
       // Verify we're logged in
       cy.window().then((win) => {
-        expect(win.localStorage.getItem('token')).to.exist
+        cy.wrap(win.localStorage.getItem('token')).should('exist')
       })
     })
   })
@@ -49,7 +49,7 @@ describe('Authentication', () => {
       // If no error shown, verify token is not stored (login failed)
       if (!hasError) {
         const token = win.localStorage.getItem('token')
-        expect(token).to.be.null
+        cy.wrap(token).should('be.null')
       }
     })
   })
@@ -72,7 +72,8 @@ describe('Authentication', () => {
     cy.get('button[type="submit"]').first().click()
     
     // Should redirect after successful registration
-    cy.url({ timeout: 10000 }).should('not.include', '/register')
+    cy.wait(1000) // Wait for redirect
+    cy.url().should('not.include', '/register')
   })
 
   it('should logout user', () => {
@@ -93,7 +94,7 @@ describe('Authentication', () => {
           
           // Verify token is removed
           cy.window().then((win) => {
-            expect(win.localStorage.getItem('token')).to.be.null
+            cy.wrap(win.localStorage.getItem('token')).should('be.null')
           })
         } else {
           cy.log('Logout button not found, skipping logout test')
@@ -105,11 +106,11 @@ describe('Authentication', () => {
   it('should redirect to login when accessing protected routes', () => {
     // Try to access shipping page without login
     cy.visit('/shipping')
-    cy.url({ timeout: 10000 }).should('include', '/login')
+    cy.url().should('include', '/login')
     
     // Try to access profile without login
     cy.visit('/profile')
-    cy.url({ timeout: 10000 }).should('include', '/login')
+    cy.url().should('include', '/login')
   })
 
  

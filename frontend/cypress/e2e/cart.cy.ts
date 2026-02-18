@@ -9,57 +9,49 @@ describe('Cart', () => {
   it('should display empty cart message when cart is empty', () => {
     cy.visit('/cart')
     cy.url().should('include', '/cart')
-    
-    // Check for empty cart message
-    cy.get('body').should(($body) => {
+    cy.get('body').should('be.visible')
+    // Wait for empty cart message (EN "Your cart is empty" or PL "Twój koszyk jest pusty")
+    cy.get('body', { timeout: 10000 }).then(($body) => {
       const text = $body.text().toLowerCase()
-      expect(text.includes('empty') || text.includes('pusty') || text.includes('cart is empty') || text.includes('koszyk jest pusty')).to.be.true
+      const hasEmptyMessage =
+        text.includes('your cart is empty') ||
+        text.includes('twój koszyk jest pusty') ||
+        text.includes('cart is empty') ||
+        text.includes('koszyk jest pusty')
+      cy.wrap(hasEmptyMessage).should('be.true')
     })
   })
 
   it('should add item to cart', () => {
-    cy.fixture('products').then((products) => {
-      const productId = products.products[0].id
-      
-      // Navigate to product and add to cart
+    // Use a product from the homepage so the ID exists on the backend
+    cy.visit('/')
+    cy.get('body').should('be.visible')
+    cy.get('a[href*="/product/"]', { timeout: 15000 }).first().then(($link) => {
+      const href = $link.attr('href') ?? ''
+      const match = href.match(/\/product\/([^/]+)/)
+      const productId = match ? match[1] : null
+      if (!productId) {
+        throw new Error('No product link found on homepage')
+      }
       cy.visit(`/product/${productId}`)
-      
-      // Wait for product page to load
       cy.get('body').should('be.visible')
-      
-      // Find and click add to cart button
-      // The button might be text-based or use Plus icon
-      cy.window().then((win) => {
-        const buttons = Array.from(win.document.querySelectorAll('button')) as unknown as HTMLButtonElement[]
-        const addToCartBtn = buttons.find((btn) => {
-          const text = btn.textContent?.toLowerCase() || ''
-          const ariaLabel = btn.getAttribute('aria-label')?.toLowerCase() || ''
-          return text.includes('add') && (text.includes('cart') || text.includes('koszyk')) ||
-                 ariaLabel.includes('add') && (ariaLabel.includes('cart') || ariaLabel.includes('koszyk'))
-        })
-        
-        if (addToCartBtn && !addToCartBtn.disabled) {
-          cy.wrap(addToCartBtn).click()
-          cy.wait(500)
-        } else {
-          // Try finding Plus button if product already in cart
-          const plusBtn = buttons.find((btn) => {
-            const svg = btn.querySelector('svg')
-            return svg && btn.textContent === '' && !btn.disabled
-          })
-          if (plusBtn) {
-            cy.wrap(plusBtn).click()
-            cy.wait(500)
-          } else {
-            throw new Error('Could not find add to cart button')
-          }
-        }
+      // Wait for add-to-cart button (product loads async); EN "Add to cart" or PL "Do koszyka"
+      const addToCartLabels = ['Add to cart', 'Do koszyka']
+      cy.get('button', { timeout: 15000 }).should(($btns) => {
+        const buttons = Array.from($btns) as HTMLButtonElement[]
+        const hasMatch = buttons.some((btn) =>
+          addToCartLabels.includes((btn.textContent ?? '').trim())
+        )
+        if (!hasMatch) throw new Error('Add to cart button not found')
+      }).then(($btns) => {
+        const buttons = Array.from($btns) as HTMLButtonElement[]
+        const match = buttons.find((btn) =>
+          addToCartLabels.includes((btn.textContent ?? '').trim())
+        )
+        if (match) cy.wrap(match).click()
       })
-      
-      // Navigate to cart
+      cy.wait(500)
       cy.visit('/cart')
-      
-      // Verify cart page loads and has content
       cy.url().should('include', '/cart')
       cy.get('body').should('be.visible')
     })
@@ -153,7 +145,8 @@ describe('Cart', () => {
           
           // Click again if quantity was > 1, or verify item removed
           cy.window().then((win) => {
-            const stillHasItem = Array.from(win.document.querySelectorAll('button')).some((btn) => {
+            const buttons = Array.from(win.document.querySelectorAll('button')) as HTMLButtonElement[]
+            const stillHasItem = buttons.some((btn) => {
               const svg = btn.querySelector('svg')
               return svg && btn.textContent?.trim() === ''
             })
@@ -258,7 +251,8 @@ describe('Cart', () => {
           if (checkoutBtn) {
             cy.wrap(checkoutBtn).click()
             // Should redirect to /login?redirect=/shipping (since user is not authenticated)
-            cy.url({ timeout: 10000 }).should('satisfy', (url: string) => {
+            cy.wait(1000) // Wait for redirect
+            cy.url().should('satisfy', (url: string) => {
               return url.includes('/login') || url.includes('/shipping')
             })
           } else {

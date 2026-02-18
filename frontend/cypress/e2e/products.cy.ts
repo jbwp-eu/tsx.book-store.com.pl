@@ -7,14 +7,9 @@ describe('Product Browsing', () => {
   })
 
   it('should display product listing on homepage', () => {
-    // Wait for products to load
     cy.get('body').should('be.visible')
-    // Products should be displayed (check for product cards or list items)
-    // Adjust selector based on actual product component structure
-    cy.window().then((win) => {
-      const bodyText = win.document.body.textContent?.toLowerCase() || ''
-      expect(bodyText.includes('product') || bodyText.includes('book')).to.be.true
-    })
+    // Products are listed as links to /product/:id
+    cy.get('a[href*="/product/"]', { timeout: 10000 }).should('have.length.at.least', 1)
   })
 
   it('should navigate to product detail page', () => {

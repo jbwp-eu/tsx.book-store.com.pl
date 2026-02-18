@@ -19,7 +19,7 @@ describe('Navigation', () => {
 
     // Navigate back to home
     cy.visit('/')
-    cy.url().should('eq', Cypress.config().baseUrl + '/')
+    cy.url().should('eq', 'http://localhost:5173/')
 
     // Navigate to login page
     cy.visit('/login')
@@ -31,8 +31,9 @@ describe('Navigation', () => {
     cy.get('header').should('be.visible')
     
     // Try to find and click cart link if it exists
-    cy.get('a[href="/cart"]').then(($link) => {
-      if ($link.length > 0 && Cypress.dom.isVisible($link)) {
+    cy.get('body').then(($body) => {
+      const cartLink = $body.find('a[href="/cart"]')[0]
+      if (cartLink && cartLink.offsetParent !== null) {
         cy.get('a[href="/cart"]').click()
         cy.url().should('include', '/cart')
       } else {
@@ -57,13 +58,14 @@ describe('Navigation', () => {
     
     // Wait for page to load, then check if redirected away from admin route
     cy.get('body').should('be.visible')
-    cy.url({ timeout: 15000 }).should('satisfy', (url: string) => {
-      return url.includes('/login') || (url === Cypress.config().baseUrl + '/' || url === Cypress.config().baseUrl)
+    cy.wait(1000) // Wait for redirect
+    cy.url().should('satisfy', (url: string) => {
+      return url.includes('/login') || url === 'http://localhost:5173/' || url === 'http://localhost:5173'
     })
   })
 
   it('should handle 404 for non-existent routes', () => {
-    cy.visit('/non-existent-page', { failOnStatusCode: false })
+    cy.visit('/non-existent-page')
     // The app redirects to home for unknown routes
     cy.url().should('not.include', '/non-existent-page')
   })

@@ -8,10 +8,30 @@ export type AuthState = {
   };
 };
 
-const initialState: AuthState = {
-  userInfo: { name: null, email: null, isAdmin: null },
-  // userInfo: { name: "test", email: "test@test.pl", isAdmin: null },
-};
+function getInitialAuthState(): AuthState {
+  if (typeof window === 'undefined') {
+    return { userInfo: { name: null, email: null, isAdmin: null } };
+  }
+  try {
+    const raw = localStorage.getItem('userInfo');
+    if (!raw) return { userInfo: { name: null, email: null, isAdmin: null } };
+    const parsed = JSON.parse(raw) as { name?: string; email?: string; isAdmin?: boolean };
+    if (parsed && typeof parsed.isAdmin === 'boolean') {
+      return {
+        userInfo: {
+          name: parsed.name ?? null,
+          email: parsed.email ?? null,
+          isAdmin: parsed.isAdmin,
+        },
+      };
+    }
+  } catch (_) {
+    // ignore invalid stored data
+  }
+  return { userInfo: { name: null, email: null, isAdmin: null } };
+}
+
+const initialState: AuthState = getInitialAuthState();
 
 export const authSlice = createSlice({
   name: "auth",

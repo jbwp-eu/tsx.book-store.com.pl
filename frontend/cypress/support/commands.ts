@@ -7,16 +7,24 @@ declare global {
        * Custom command to login a user
        * @example cy.login('user@example.com', 'password123')
        */
-      login(email: string, password: string): Chainable<void>
+      login(email: string, password: string): void
       
       /**
        * Custom command to login as admin
        * @example cy.loginAsAdmin()
        */
-      loginAsAdmin(): Chainable<void>
+      loginAsAdmin(): void
+      /**
+       * Login as admin via UI so Redux gets userInfo (for admin route access).
+       * @example cy.loginAsAdminViaUI()
+       */
+      loginAsAdminViaUI(): void
     }
   }
 }
+
+// Cypress is a value at runtime; access via globalThis to avoid "namespace as value" type error
+const CypressRuntime = (globalThis as unknown as { Cypress: { Commands: { add: (name: string, fn: (...args: unknown[]) => void) => void }; config: () => { env?: { VITE_BACKEND_URL?: string } } } }).Cypress
 
 /**
  * Login helper command
@@ -24,9 +32,9 @@ declare global {
  * @param email - User email address
  * @param password - User password
  */
-Cypress.Commands.add('login', (email: string, password: string) => {
-  // Cypress.config().env may be undefined when allowCypressEnv is false; use default
-  const backendUrl = Cypress.config().env?.VITE_BACKEND_URL ?? 'http://localhost:3003'
+CypressRuntime.Commands.add('login', (email: string, password: string) => {
+  // config().env may be undefined when allowCypressEnv is false; use default
+  const backendUrl = CypressRuntime.config().env?.VITE_BACKEND_URL ?? 'http://localhost:3003'
   
   cy.request({
     method: 'POST',
@@ -79,9 +87,40 @@ Cypress.Commands.add('login', (email: string, password: string) => {
  * Admin login helper command
  * Logs in using admin credentials from fixtures
  */
-Cypress.Commands.add('loginAsAdmin', () => {
+CypressRuntime.Commands.add('loginAsAdmin', () => {
   cy.fixture('users').then((users) => {
     cy.login(users.admin.email, users.admin.password)
+  })
+})
+
+/**
+ * Login as admin via the login form so Redux state is set (required for AdminRoute).
+ */
+CypressRuntime.Commands.add('loginAsAdminViaUI', () => {
+  cy.fixture('users').then((users) => {
+    cy.visit('/login')
+    cy.get('input[name="email"], input[type="email"]').first().type(users.admin.email)
+    cy.get('input[name="password"], input[type="password"]').first().type(users.admin.password)
+    cy.get('button[type="submit"]').first().click()
+    // Wait for redirect away from login (component navigates when userInfo is set in Redux)
+    // This confirms the action completed and setCredentials was called
+    cy.url().should('not.include', '/login', { timeout: 15000 })
+    // Now verify localStorage is set (setCredentials sets it synchronously, so it should be there)
+    // Retry until localStorage has userInfo with isAdmin set
+    cy.window().should((win) => {
+      const userInfo = win.localStorage.getItem('userInfo')
+      if (!userInfo) {
+        throw new Error('userInfo not set in localStorage')
+      }
+      try {
+        const parsed = JSON.parse(userInfo)
+        if (typeof parsed.isAdmin !== 'boolean' || !parsed.isAdmin) {
+          throw new Error('userInfo.isAdmin not set or not true')
+        }
+      } catch (e) {
+        throw new Error(`Invalid userInfo in localStorage: ${e}`)
+      }
+    })
   })
 })
 
