@@ -11,7 +11,7 @@
     "seed": "tsx backend/seeder.ts -i",
     "seed:destroy": "tsx backend/seeder.ts -d",
     "client": "npm run dev --prefix frontend",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cd frontend && npm run cy:run",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "dependencies": {
