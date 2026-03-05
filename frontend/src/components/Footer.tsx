@@ -8,6 +8,7 @@ import { type ObjectDict } from "@/dictionaries/dictionary.ts";
 import ContactForm from "./ContactForm";
 import { type ActionFunctionArgs } from "react-router-dom";
 import { toast } from "sonner";
+import StoreLocator from "./StoreLocator";
 
 const Footer = () => {
   const { language } = useSelector((state: RootState) => state.ui);
@@ -34,7 +35,7 @@ const Footer = () => {
     <footer>
       <Container>
         <Card className="text-card-foreground/75">
-          <CardContent className="grid md:grid-cols-4 gap-3-1">
+          <CardContent className="grid md:grid-cols-5 gap-3-1">
             <div>
               <ContactForm />
             </div>
@@ -64,6 +65,9 @@ const Footer = () => {
               <p className="font-thin">
                 {language === "en" ? payment_2 : paymentPL_2}
               </p>
+            </div>
+            <div>
+              <StoreLocator />
             </div>
           </CardContent>
         </Card>

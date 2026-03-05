@@ -54,6 +54,8 @@ const dictionary: Dictionary = {
     paymentPL_1: "Różne formy płatności",
     payment_2: "Pay with PayPal or Stripe",
     paymentPL_2: "Płać z PayPal lub Stripe",
+    store_locator: "Store Locator",
+    store_locatorPL: "Lokalizator sklepu",
   },
   message: {
     button: "Back to the home page",
