@@ -1,4 +1,3 @@
-import dictionary, { type ObjectDict } from "@/dictionaries/dictionary";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { useSelector } from "react-redux";
@@ -9,6 +8,8 @@ import { Button } from "./ui/button";
 import type { User } from "@/types";
 import { withFormik, type FormikProps } from "formik";
 import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
+import { translateLng } from "@/i18n/i18n";
 
 interface FormValues {
   email: string;
@@ -27,7 +28,7 @@ interface MyFormProps {
 }
 
 const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
-  const { language } = useSelector((store: RootState) => store.ui);
+  const { t } = useTranslation();
   const {
     values,
     errors,
@@ -36,42 +37,17 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
     handleBlur,
     handleSubmit,
     isSubmitting,
-    //other,
   } = props;
-
-  const {
-    email_label,
-    email_placeholder,
-    email_placeholderPL,
-    name_label,
-    name_labelPL,
-    name_placeholder,
-    name_placeholderPL,
-    isAdmin_label,
-    isAdmin_labelPL,
-    update,
-    updatePL,
-    updating,
-    updatingPL,
-  } = dictionary.userEditForm as ObjectDict;
-
-  // console.log("values:", values);
-  // console.log("errors:", errors);
-  // console.log("touched:", touched);
 
   return (
     <form onSubmit={handleSubmit}>
       <p className="flex flex-col space-y-2 my-4">
-        <Label htmlFor="email">{email_label}</Label>
+        <Label htmlFor="email">{t("userEditForm.email_label")}</Label>
         <Input
           id="email"
-          placeholder={
-            language === "en" ? email_placeholder : email_placeholderPL
-          }
+          placeholder={t("userEditForm.email_placeholder")}
           type="email"
           name="email"
-          // value={email_value}
-          // onChange={handleEmailChange}
           value={values.email}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -82,18 +58,12 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
       ) : null}
 
       <p className="flex flex-col space-y-2 my-4">
-        <Label htmlFor="name">
-          {language === "en" ? name_label : name_labelPL}
-        </Label>
+        <Label htmlFor="name">{t("userEditForm.name_label")}</Label>
         <Input
           id="name"
-          placeholder={
-            language === "en" ? name_placeholder : name_placeholderPL
-          }
+          placeholder={t("userEditForm.name_placeholder")}
           type="text"
           name="name"
-          // value={name_value}
-          // onChange={handleNameChange}
           value={values.name}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -108,26 +78,18 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
           id="isAdmin"
           type="checkbox"
           name="isAdmin"
-          // checked={isAdmin_value}
-          // onChange={handleIsAdminChange}
           checked={values.isAdmin}
           onChange={handleChange}
           onBlur={handleBlur}
           className="h-4 w-4"
         />
-        <Label htmlFor="isAdmin">
-          {language === "en" ? isAdmin_label : isAdmin_labelPL}
-        </Label>
+        <Label htmlFor="isAdmin">{t("userEditForm.isAdmin_label")}</Label>
       </p>
 
       <Button type="submit" className="mt-4 float-right">
-        {language === "en"
-          ? isSubmitting
-            ? updating
-            : update
-          : isSubmitting
-          ? updatingPL
-          : updatePL}
+        {isSubmitting
+          ? t("userEditForm.updating")
+          : t("userEditForm.update")}
       </Button>
     </form>
   );
@@ -137,34 +99,9 @@ const UserEditForm = ({ user }: { user: User }) => {
   const { email, name, isAdmin } = user;
 
   const submit = useSubmit();
-  // const [email_value, setEmail] = useState(email);
-  // const [name_value, setName] = useState(name);
-  // const [isAdmin_value, setIsAdmin] = useState(isAdmin);
 
   const { language } = useSelector((store: RootState) => store.ui);
-
-  const {
-    title,
-    titlePL,
-    yup_email,
-    yup_emailPL,
-    yup_email_req,
-    yup_email_reqPL,
-    yup_name,
-    yup_namePL,
-  } = dictionary.userEditForm as ObjectDict;
-
-  // const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setEmail(e.currentTarget.value);
-  // };
-
-  // const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setName(e.currentTarget.value);
-  // };
-
-  // const handleIsAdminChange = () => {
-  //   setIsAdmin((prev) => !prev);
-  // };
+  const { t } = useTranslation();
 
   const MyEnhancedForm = withFormik<MyFormProps, FormValues>({
     mapPropsToValues: ({
@@ -178,12 +115,13 @@ const UserEditForm = ({ user }: { user: User }) => {
     }),
     validationSchema: Yup.object().shape({
       email: Yup.string()
-        .email(language === "en" ? yup_email : yup_emailPL)
-        .required(language === "en" ? yup_email_req : yup_email_reqPL),
-      name: Yup.string().required(language === "en" ? yup_name : yup_namePL),
+        .email(translateLng(language, "userEditForm.yup_email"))
+        .required(translateLng(language, "userEditForm.yup_email_req")),
+      name: Yup.string().required(
+        translateLng(language, "userEditForm.yup_name")
+      ),
     }),
     handleSubmit(values: FormValues) {
-      // console.log("values:", values);
       const formData = new FormData();
       formData.append("email", values.email);
       formData.append("name", values.name);
@@ -195,9 +133,7 @@ const UserEditForm = ({ user }: { user: User }) => {
 
   return (
     <div>
-      <h2 className="h2-semibold py-4">
-        {language === "en" ? title : titlePL}
-      </h2>
+      <h2 className="h2-semibold py-4">{t("userEditForm.title")}</h2>
       <MyEnhancedForm />
     </div>
   );

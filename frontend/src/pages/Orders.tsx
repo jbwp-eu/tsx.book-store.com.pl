@@ -1,7 +1,3 @@
-import { useAppSelector } from "@/store/hook";
-import { type RootState } from "@/store/store";
-import dictionary from "@/dictionaries/dictionary";
-import { type ObjectDict } from "@/dictionaries/dictionary";
 import { NavLink, useLoaderData, type LoaderFunction } from "react-router-dom";
 import { toast } from "sonner";
 import Message from "@/components/Message";
@@ -18,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import type { MessageProps, Order } from "@/types";
 import { Card } from "@/components/ui/card";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const loader =
   (language: string): LoaderFunction =>
@@ -33,7 +30,6 @@ const loader =
     );
     if (!response.ok) {
       const resData = await response.json();
-      // throw new Error(resData.message);
       toast.error(resData.message);
       return resData;
     } else {
@@ -42,26 +38,7 @@ const loader =
   };
 
 const OrdersPage = () => {
-  const { language } = useAppSelector((state: RootState) => state.ui);
-
-  const {
-    title,
-    titlePL,
-    id,
-    idPL,
-    date,
-    datePL,
-    total,
-    totalPL,
-    paid,
-    paidPL,
-    delivered,
-    deliveredPL,
-    actions,
-    actionsPL,
-    details,
-    detailsPL,
-  } = dictionary.orders as ObjectDict;
+  const { t } = useTranslation();
 
   const data = useLoaderData<Order[] | MessageProps>();
 
@@ -72,28 +49,22 @@ const OrdersPage = () => {
   } else {
     content = (
       <div>
-        <h2 className="h2-semibold py-4">
-          {language === "en" ? title : titlePL}
-        </h2>
+        <h2 className="h2-semibold py-4">{t("orders.title")}</h2>
         <div>
           <Table className="hidden md:table">
             <TableHeader>
               <TableRow>
-                <TableHead>{language === "en" ? id : idPL}</TableHead>
+                <TableHead>{t("orders.id")}</TableHead>
+                <TableHead className="text-center">{t("orders.date")}</TableHead>
                 <TableHead className="text-center">
-                  {language === "en" ? date : datePL}
+                  {t("orders.total")}
                 </TableHead>
+                <TableHead className="text-center">{t("orders.paid")}</TableHead>
                 <TableHead className="text-center">
-                  {language === "en" ? total : totalPL}
-                </TableHead>
-                <TableHead className="text-center">
-                  {language === "en" ? paid : paidPL}
-                </TableHead>
-                <TableHead className="text-center">
-                  {language === "en" ? delivered : deliveredPL}
+                  {t("orders.delivered")}
                 </TableHead>
                 <TableHead className="text-right">
-                  {language === "en" ? actions : actionsPL}{" "}
+                  {t("orders.actions")}{" "}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -102,7 +73,6 @@ const OrdersPage = () => {
                 <TableRow key={order.id}>
                   <TableCell>{formatId(order.id)}</TableCell>
                   <TableCell className="text-center">
-                    {/* {order.createdAt.toString().substring(0, 10)} */}
                     {formateDate(order.createdAt).substring(0, 17)}
                   </TableCell>
                   <TableCell className="text-center">
@@ -113,7 +83,6 @@ const OrdersPage = () => {
                       {order.isPaid && order.paidAt ? (
                         formateDate(order.paidAt)
                       ) : (
-                        // new Date(order.paidAt).toLocaleString()
                         <X className="text-red-600" />
                       )}
                     </span>
@@ -130,7 +99,7 @@ const OrdersPage = () => {
                   <TableCell className="text-right">
                     <Button asChild variant="outline">
                       <NavLink to={`/order/${order.id}/checkout`}>
-                        {language === "en" ? details : detailsPL}
+                        {t("orders.details")}
                       </NavLink>
                     </Button>
                   </TableCell>
@@ -143,24 +112,21 @@ const OrdersPage = () => {
               <Table>
                 <TableBody>
                   <TableRow>
-                    <TableHead>{language === "en" ? id : idPL}</TableHead>
+                    <TableHead>{t("orders.id")}</TableHead>
                     <TableCell>{formatId(order.id)}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableHead> {language === "en" ? date : datePL}</TableHead>
+                    <TableHead>{t("orders.date")}</TableHead>
                     <TableCell>
                       {formateDate(order.createdAt).substring(0, 17)}
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableHead>
-                      {" "}
-                      {language === "en" ? total : totalPL}
-                    </TableHead>
-                    <TableCell> {formatCurrency(order.totalPrice)}</TableCell>
+                    <TableHead>{t("orders.total")}</TableHead>
+                    <TableCell>{formatCurrency(order.totalPrice)}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableHead> {language === "en" ? paid : paidPL}</TableHead>
+                    <TableHead>{t("orders.paid")}</TableHead>
                     <TableCell>
                       <span>
                         {order.isPaid && order.paidAt ? (
@@ -172,14 +138,11 @@ const OrdersPage = () => {
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableHead>
-                      {language === "en" ? delivered : deliveredPL}
-                    </TableHead>
+                    <TableHead>{t("orders.delivered")}</TableHead>
                     <TableCell>
-                      {" "}
                       <span>
-                        {order.isPaid && order.paidAt ? (
-                          formateDate(order.paidAt)
+                        {order.isDelivered && order.deliveredAt ? (
+                          formateDate(order.deliveredAt).substring(0, 10)
                         ) : (
                           <X className="text-red-600" />
                         )}
@@ -187,14 +150,11 @@ const OrdersPage = () => {
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableHead>
-                      {" "}
-                      {language === "en" ? actions : actionsPL}
-                    </TableHead>
+                    <TableHead>{t("orders.actions")}</TableHead>
                     <TableCell>
                       <Button asChild variant="outline">
                         <NavLink to={`/order/${order.id}/checkout`}>
-                          {language === "en" ? details : detailsPL}
+                          {t("orders.details")}
                         </NavLink>
                       </Button>
                     </TableCell>

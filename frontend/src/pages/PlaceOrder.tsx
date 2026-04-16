@@ -1,7 +1,5 @@
 import CheckoutSteps from "@/components/CheckoutSteps";
 import { Card, CardContent } from "@/components/ui/card";
-import dictionary from "@/dictionaries/dictionary";
-import { type ObjectDict } from "@/dictionaries/dictionary";
 import { useAppSelector } from "@/store/hook.ts";
 import { type RootState } from "@/store/store";
 import { Link, redirect, useNavigate } from "react-router-dom";
@@ -23,9 +21,10 @@ import { clearCartItems } from "@/store/cartSlice";
 import { useEffect } from "react";
 import { formatCurrency } from "@/utils/formatUtils";
 import Image from "@/components/Image";
+import { useTranslation } from "react-i18next";
 
 const PlaceOrder = () => {
-  const { language } = useAppSelector((state: RootState) => state.ui);
+  const { t } = useTranslation();
 
   const {
     shippingAddress,
@@ -39,35 +38,6 @@ const PlaceOrder = () => {
 
   const { address, city, code } = shippingAddress;
   const navigate = useNavigate();
-
-  const {
-    title,
-    titlePL,
-    shippingAddress_text,
-    shippingAddress_textPL,
-    button_text,
-    button_textPL,
-    paymentMethod_text,
-    paymentMethod_textPL,
-    item,
-    quantity,
-    price,
-    itemPL,
-    quantityPL,
-    pricePL,
-    orderItems_text,
-    orderItems_textPL,
-    items,
-    shipping,
-    total,
-    itemsPL,
-    shippingPL,
-    totalPL,
-    button_order,
-    button_orderPL,
-    tax,
-    taxPL,
-  } = dictionary.placeOrder as ObjectDict;
 
   const submit = useSubmit();
 
@@ -89,24 +59,20 @@ const PlaceOrder = () => {
   return (
     <div>
       <CheckoutSteps current={3} />
-      <h2 className="h2-semibold py-4">
-        {language === "en" ? title : titlePL}
-      </h2>
+      <h2 className="h2-semibold py-4">{t("placeOrder.title")}</h2>
       <div className="grid sm:grid-cols-5 gap-4">
         <div className="sm:col-span-3 space-y-4">
           <Card>
             <CardContent>
               <p className="text-lg lg:text-xl font-semibold ">
-                {language === "en"
-                  ? shippingAddress_text
-                  : shippingAddress_textPL}
+                {t("placeOrder.shippingAddress_text")}
               </p>
               <p>{shippingAddress.address}</p>
               <p>{shippingAddress.code}</p>
               <p>{shippingAddress.city}</p>
               <Link to="/shipping">
                 <Button variant="outline" className="mt-2">
-                  {language === "en" ? button_text : button_textPL}
+                  {t("placeOrder.button_text")}
                 </Button>
               </Link>
             </CardContent>
@@ -114,12 +80,12 @@ const PlaceOrder = () => {
           <Card>
             <CardContent>
               <p className="text-lg lg:text-xl font-semibold ">
-                {language === "en" ? paymentMethod_text : paymentMethod_textPL}
+                {t("placeOrder.paymentMethod_text")}
               </p>
               <p>{paymentMethod}</p>
               <Link to="/payment">
                 <Button variant="outline" className="mt-2">
-                  {language === "en" ? button_text : button_textPL}
+                  {t("placeOrder.button_text")}
                 </Button>
               </Link>
             </CardContent>
@@ -127,17 +93,17 @@ const PlaceOrder = () => {
           <Card>
             <CardContent>
               <p className="text-lg lg:text-xl font-semibold ">
-                {language === "en" ? orderItems_text : orderItems_textPL}
+                {t("placeOrder.orderItems_text")}
               </p>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>{language === "en" ? item : itemPL}</TableHead>
+                    <TableHead>{t("placeOrder.item")}</TableHead>
                     <TableHead className="text-center">
-                      {language === "en" ? quantity : quantityPL}
+                      {t("placeOrder.quantity")}
                     </TableHead>
                     <TableHead className="text-right">
-                      {language === "en" ? price : pricePL}
+                      {t("placeOrder.price")}
                     </TableHead>
                   </TableRow>
                 </TableHeader>
@@ -170,23 +136,23 @@ const PlaceOrder = () => {
           <Card>
             <CardContent className="space-y-4">
               <div className="flex justify-between">
-                <p>{language === "en" ? items : itemsPL}</p>
+                <p>{t("placeOrder.items")}</p>
                 <p>{formatCurrency(itemsPrice)}</p>
               </div>
               <div className="flex justify-between">
-                <p>{language === "en" ? tax : taxPL}</p>
+                <p>{t("placeOrder.tax")}</p>
                 <p>{formatCurrency(taxPrice)}</p>
               </div>
               <div className="flex justify-between">
-                <p>{language === "en" ? shipping : shippingPL}</p>
+                <p>{t("placeOrder.shipping")}</p>
                 <p>{formatCurrency(shippingPrice)}</p>
               </div>
               <div className="flex justify-between font-semibold">
-                <p>{language === "en" ? total : totalPL}</p>
+                <p>{t("placeOrder.total")}</p>
                 <p>{formatCurrency(totalPrice)}</p>
               </div>
               <Button className="float-right " onClick={onClickHandler}>
-                {language === "en" ? button_order : button_orderPL}
+                {t("placeOrder.button_order")}
               </Button>
             </CardContent>
           </Card>

@@ -8,9 +8,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import dictionary, { type ObjectDict } from "@/dictionaries/dictionary";
-import { useAppSelector } from "@/store/hook";
-import type { RootState } from "@/store/store";
 import type { MessageProps, ProductReview } from "@/types";
 import { formateDate, formatId } from "@/utils/formatUtils";
 import {
@@ -20,6 +17,7 @@ import {
   type LoaderFunction,
 } from "react-router-dom";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const loader =
   (language: string): LoaderFunction =>
@@ -35,7 +33,6 @@ const loader =
     );
     if (!response.ok) {
       const resData = await response.json();
-      // throw new Error(resData.message);
       toast.error(resData.message);
       return resData;
     } else {
@@ -44,30 +41,9 @@ const loader =
   };
 
 const ReviewsPage = () => {
+  const { t } = useTranslation();
   const data = useLoaderData<ProductReview[] | MessageProps>();
   const submit = useSubmit();
-  const { language } = useAppSelector((state: RootState) => state.ui);
-
-  const {
-    id,
-    idPL,
-    productTitle,
-    productTitlePL,
-    date,
-    datePL,
-    title,
-    titlePL,
-    title_table,
-    title_tablePL,
-    description,
-    descriptionPL,
-    rating,
-    ratingPL,
-    actions,
-    actionsPL,
-    delete_text,
-    delete_textPL,
-  } = dictionary.reviews as ObjectDict;
 
   function deleteReviewHandler(id: string) {
     submit({ id }, { method: "delete", encType: "application/json" });
@@ -80,31 +56,23 @@ const ReviewsPage = () => {
   } else {
     content = (
       <div>
-        <h2 className="h2-semibold py-4">
-          {language === "en" ? title : titlePL}
-        </h2>
+        <h2 className="h2-semibold py-4">{t("reviews.title")}</h2>
         <div>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>
-                  {language === "en" ? productTitle : productTitlePL}
-                </TableHead>
-                <TableHead>{language === "en" ? id : idPL}</TableHead>
+                <TableHead>{t("reviews.productTitle")}</TableHead>
+                <TableHead>{t("reviews.id")}</TableHead>
+                <TableHead className="text-center">{t("reviews.date")}</TableHead>
                 <TableHead className="text-center">
-                  {language === "en" ? date : datePL}
-                </TableHead>
-                <TableHead className="text-center">
-                  {language === "en" ? title_table : title_tablePL}
+                  {t("reviews.title_table")}
                 </TableHead>
                 <TableHead className="text-center">
-                  {language === "en" ? description : descriptionPL}
+                  {t("reviews.description")}
                 </TableHead>
-                <TableHead className="text-center">
-                  {language === "en" ? rating : ratingPL}
-                </TableHead>
+                <TableHead className="text-center">{t("reviews.rating")}</TableHead>
                 <TableHead className="text-right">
-                  {language === "en" ? actions : actionsPL}{" "}
+                  {t("reviews.actions")}{" "}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -126,7 +94,7 @@ const ReviewsPage = () => {
                       variant="outline"
                       onClick={() => deleteReviewHandler(review.id)}
                     >
-                      {language === "en" ? delete_text : delete_textPL}
+                      {t("reviews.delete_text")}
                     </Button>
                   </TableCell>
                 </TableRow>

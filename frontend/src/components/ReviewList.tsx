@@ -11,17 +11,15 @@ import ReviewForm from "./ReviewForm";
 import type { Product } from "@/types";
 import type { RootState } from "@/store/store";
 import { Link } from "react-router-dom";
-import dictionary, { type ObjectDict } from "../dictionaries/dictionary.ts";
 import { useAppSelector } from "@/store/hook";
+import { useTranslation } from "react-i18next";
 
 const ReviewList = ({ product }: { product: Product }) => {
+  const { t } = useTranslation();
   const { name, email } = useAppSelector(
     (state: RootState) => state.auth.userInfo
   );
-  const { language } = useAppSelector((state: RootState) => state.ui);
   const date = new Date().toLocaleString();
-  const { signIn, signInPL, message_text, message_textPL } =
-    dictionary.reviewList as ObjectDict;
 
   return (
     <div>
@@ -29,14 +27,14 @@ const ReviewList = ({ product }: { product: Product }) => {
         <ReviewForm />
       ) : (
         <p className="mt-4 mb-8 text-xl font-normal ">
-          {language === "en" ? "Please " : ""}
+          {t("reviewList.invite_prefix")}
           <Link
             to={`/login?redirect=/product/${product.id}`}
             className="font-normal underline decoration-solid"
           >
-            {language === "en" ? signIn : signInPL}
+            {t("reviewList.signIn")}
           </Link>{" "}
-          {language === "en" ? message_text : message_textPL}
+          {t("reviewList.message_text")}
         </p>
       )}
       <div className="flex flex-col gap-3">

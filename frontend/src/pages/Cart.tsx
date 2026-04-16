@@ -1,6 +1,5 @@
 import { type RootState } from "@/store/store";
 import Message from "@/components/Message";
-import dictionary from "@/dictionaries/dictionary";
 import {
   Table,
   TableBody,
@@ -16,36 +15,19 @@ import { ArrowRight, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { type CartItem } from "@/store/cartSlice";
 import { Card, CardContent } from "@/components/ui/card";
-import { type ObjectDict } from "@/dictionaries/dictionary";
 import { formatCurrency } from "@/utils/formatUtils";
 import Image from "@/components/Image";
+import { useTranslation } from "react-i18next";
 
 const CartPage = () => {
+  const { t } = useTranslation();
   const { cartItems, itemsQuantity, itemsPrice } = useAppSelector(
     (state: RootState) => state.cart
   );
-  const { language } = useAppSelector((state: RootState) => state.ui);
 
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
-
-  const {
-    message,
-    messagePL,
-    title,
-    titlePL,
-    table_item,
-    table_qty,
-    table_price,
-    table_itemPL,
-    table_qtyPL,
-    table_pricePL,
-    subtotal,
-    subtotalPL,
-    button_text,
-    button_textPL,
-  } = dictionary.cart as ObjectDict;
 
   function handleAddToCart(item: CartItem) {
     dispatch(addItemToCart(item));
@@ -61,25 +43,21 @@ const CartPage = () => {
 
   return (
     <div>
-      <h2 className="h2-semibold py-4">
-        {language === "en" ? title : titlePL}
-      </h2>
+      <h2 className="h2-semibold py-4">{t("cart.title")}</h2>
       {cartItems.length === 0 ? (
-        <Message info>{language === "en" ? message : messagePL}</Message>
+        <Message info>{t("cart.message")}</Message>
       ) : (
         <div className="grid sm:grid-cols-5 gap-x-4 gap-y-4">
           <div className="sm:col-span-3">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>
-                    {language === "en" ? table_item : table_itemPL}
-                  </TableHead>
+                  <TableHead>{t("cart.table_item")}</TableHead>
                   <TableHead className="text-center">
-                    {language === "en" ? table_qty : table_qtyPL}
+                    {t("cart.table_qty")}
                   </TableHead>
                   <TableHead className="text-right">
-                    {language === "en" ? table_price : table_pricePL}
+                    {t("cart.table_price")}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -124,14 +102,14 @@ const CartPage = () => {
           <Card className="sm:col-span-2 self-start min-h-40">
             <CardContent>
               <div className="text-xl">
-                {language === "en" ? subtotal : subtotalPL}({itemsQuantity}):
+                {t("cart.subtotal")}({itemsQuantity}):
                 <span className="font-bold ml-2">
                   {formatCurrency(itemsPrice)}
                 </span>
               </div>
               <Button className="mt-4 float-right" onClick={checkoutHandler}>
                 <ArrowRight />
-                {language === "en" ? button_text : button_textPL}
+                {t("cart.button_text")}
               </Button>
             </CardContent>
           </Card>

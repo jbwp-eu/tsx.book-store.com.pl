@@ -1,9 +1,5 @@
 import { useLoaderData, type ActionFunctionArgs } from "react-router-dom";
 import { type LoaderFunction } from "react-router-dom";
-import dictionary from "@/dictionaries/dictionary";
-import { useAppSelector } from "@/store/hook";
-import { type RootState } from "@/store/store";
-import { type ObjectDict } from "@/dictionaries/dictionary";
 import { formatId } from "@/utils/formatUtils";
 
 import { toast } from "sonner";
@@ -15,6 +11,7 @@ import OrderSummary from "@/components/OrderSummary";
 import { useEffect } from "react";
 import { useAppDispatch } from "@/store/hook";
 import { setCredentials } from "@/store/authSlice";
+import { useTranslation } from "react-i18next";
 
 const loader =
   (language: string): LoaderFunction =>
@@ -41,9 +38,8 @@ const loader =
   };
 
 const OrderPage = () => {
+  const { t } = useTranslation();
   const data = useLoaderData<Order | MessageProps>();
-  const { language } = useAppSelector((state: RootState) => state.ui);
-  const { title, titlePL } = dictionary.order as ObjectDict;
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -59,7 +55,7 @@ const OrderPage = () => {
     content = (
       <div>
         <h2 className="h2-semibold py-4">
-          {language === "en" ? title : titlePL}{" "}
+          {t("order.title")}{" "}
           <span className="">{formatId(data.id)}</span>
         </h2>
         <div className="grid md:grid-cols-3 gap-x-4 ">

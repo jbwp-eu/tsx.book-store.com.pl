@@ -1,20 +1,18 @@
 import StripePayment from "@/pages/StripePayment";
 import { useEffect, useState } from "react";
 import Fallback from "@/components/Fallback";
-import PayPalPayment from "@/pages/PayPalPayment";
 import { formatCurrency } from "@/utils/formatUtils";
 import { Button } from "@/components/ui/button";
 import { useAppSelector } from "@/store/hook";
-import { type RootState } from "@/store/store";
-import dictionary, { type ObjectDict } from "@/dictionaries/dictionary";
 import { useSubmit } from "react-router-dom";
 import type { Order } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
+import { useTranslation } from "react-i18next";
 
 const OrderSummary = ({ order }: { order: Order }) => {
+  const { t } = useTranslation();
   const currency = import.meta.env.VITE_CURRENCY;
-  const { language } = useAppSelector((state: RootState) => state.ui);
-  const { userInfo } = useAppSelector((state: RootState) => state.auth);
+  const { userInfo } = useAppSelector((state) => state.auth);
   const [loading, setIsLoading] = useState(false);
   const [clientSecret, setClientSecret] = useState("");
   const {
@@ -28,19 +26,6 @@ const OrderSummary = ({ order }: { order: Order }) => {
     taxPrice,
     totalPrice,
   } = order;
-
-  const {
-    items,
-    itemsPL,
-    shipping,
-    shippingPL,
-    total,
-    totalPL,
-    tax,
-    taxPL,
-    markAsDelivered,
-    markAsDeliveredPL,
-  } = dictionary.order as ObjectDict;
 
   const submit = useSubmit();
 
@@ -86,29 +71,28 @@ const OrderSummary = ({ order }: { order: Order }) => {
       <Card>
         <CardContent className="space-y-4">
           <div className="flex justify-between">
-            <p>{language === "en" ? items : itemsPL}</p>
+            <p>{t("order.items")}</p>
             <p>{formatCurrency(itemsPrice)}</p>
           </div>
           <div className="flex justify-between">
-            <p>{language === "en" ? tax : taxPL}</p>
+            <p>{t("order.tax")}</p>
             <p>{formatCurrency(taxPrice)}</p>
           </div>
           <div className="flex justify-between">
-            <p>{language === "en" ? shipping : shippingPL}</p>
+            <p>{t("order.shipping")}</p>
             <p>{formatCurrency(shippingPrice)}</p>
           </div>
           <div className="flex justify-between font-bold">
-            <p className="">{language === "en" ? total : totalPL}</p>
+            <p className="">{t("order.total")}</p>
             <p className="">{formatCurrency(totalPrice)}</p>
             {}
           </div>
           {(!isDelivered || !deliveredAt) && userInfo.isAdmin && (
             <Button className="w-full" onClick={deliverOrderHandler}>
-              {language === "en" ? markAsDelivered : markAsDeliveredPL}
+              {t("order.markAsDelivered")}
             </Button>
           )}
 
-          {/* Stripe payment */}
           {!isPaid && paymentMethod === "Stripe" && (
             <div>
               {loading ? (
@@ -118,9 +102,6 @@ const OrderSummary = ({ order }: { order: Order }) => {
               )}
             </div>
           )}
-
-          {/* PayPal payment */}
-          {!isPaid && paymentMethod === "PayPal" && <PayPalPayment />}
         </CardContent>
       </Card>
     </div>

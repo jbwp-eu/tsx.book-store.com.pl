@@ -34,10 +34,16 @@ import ProductCarousel from "./components/ProductCarousel.tsx";
 import Footer from "./components/Footer.tsx";
 import StoreRegulationsPage from "./pages/StoreRegulations.tsx";
 import { Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import i18n from "@/i18n/i18n";
 
 function App() {
   const { language } = useAppSelector((state: RootState) => state.ui);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    void i18n.changeLanguage(language === "pl" ? "pl" : "en");
+  }, [language]);
 
   const router = createBrowserRouter([
     {

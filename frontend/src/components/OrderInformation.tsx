@@ -8,16 +8,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import dictionary, { type ObjectDict } from "@/dictionaries/dictionary";
 import type { Order } from "@/types";
-import { useAppSelector } from "@/store/hook";
-import type { RootState } from "@/store/store";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "@/utils/formatUtils";
 import Image from "./Image";
+import { useTranslation } from "react-i18next";
 
 const OrderInformation = ({ order }: { order: Order }) => {
-  const { language } = useAppSelector((state: RootState) => state.ui);
+  const { t } = useTranslation();
   const {
     paymentMethod,
     shippingAddress,
@@ -27,44 +25,23 @@ const OrderInformation = ({ order }: { order: Order }) => {
     deliveredAt,
     OrderItems,
   } = order;
-  const {
-    paymentMethod_text,
-    paymentMethod_textPL,
-    shippingAddress_text,
-    shippingAddress_textPL,
-    notPaid,
-    notPaidPL,
-    notDelivered,
-    notDeliveredPL,
-    paidAt_text,
-    paidAt_textPL,
-    delivered_text,
-    delivered_textPL,
-    orderItems,
-    orderItemsPL,
-    item_text,
-    quantity_text,
-    price_text,
-    item_textPL,
-    quantity_textPL,
-    price_textPL,
-  } = dictionary.order as ObjectDict;
+
   return (
     <div className="grid md:col-span-2 gap-y-4">
       <Card>
         <CardContent>
           <h3 className="h3-semibold mb-2">
-            {language === "en" ? paymentMethod_text : paymentMethod_textPL}
+            {t("order.paymentMethod_text")}
           </h3>
           <p>{paymentMethod}</p>
           {isPaid && paidAt ? (
             <Badge variant="secondary" className="mt-4">
-              {language === "en" ? paidAt_text : paidAt_textPL}{" "}
+              {t("order.paidAt_text")}{" "}
               {new Date(paidAt).toLocaleString()}
             </Badge>
           ) : (
             <Badge variant="destructive" className="mt-4">
-              {language === "en" ? notPaid : notPaidPL}
+              {t("order.notPaid")}
             </Badge>
           )}
         </CardContent>
@@ -72,41 +49,37 @@ const OrderInformation = ({ order }: { order: Order }) => {
       <Card>
         <CardContent>
           <h3 className="h3-semibold mb-2">
-            {language === "en" ? shippingAddress_text : shippingAddress_textPL}
+            {t("order.shippingAddress_text")}
           </h3>
           <p>{shippingAddress.address}</p>
           <p>{shippingAddress.city}</p>
           <p>{shippingAddress.code}</p>
           {isDelivered && deliveredAt ? (
             <Badge variant="secondary" className="mt-4">
-              {language === "en" ? delivered_text : delivered_textPL}{" "}
+              {t("order.delivered_text")}{" "}
               {new Date(deliveredAt.toString())
                 .toLocaleString()
                 .substring(0, 10)}
             </Badge>
           ) : (
             <Badge variant="destructive" className="mt-4">
-              {language === "en" ? notDelivered : notDeliveredPL}
+              {t("order.notDelivered")}
             </Badge>
           )}
         </CardContent>
       </Card>
       <Card>
         <CardContent>
-          <h3 className="h3-semibold mb-2">
-            {language === "en" ? orderItems : orderItemsPL}
-          </h3>
+          <h3 className="h3-semibold mb-2">{t("order.orderItems")}</h3>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>
-                  {language === "en" ? item_text : item_textPL}
-                </TableHead>
+                <TableHead>{t("order.item_text")}</TableHead>
                 <TableHead className="text-center">
-                  {language === "en" ? quantity_text : quantity_textPL}
+                  {t("order.quantity_text")}
                 </TableHead>
                 <TableHead className="text-right">
-                  {language === "en" ? price_text : price_textPL}
+                  {t("order.price_text")}
                 </TableHead>
               </TableRow>
             </TableHeader>

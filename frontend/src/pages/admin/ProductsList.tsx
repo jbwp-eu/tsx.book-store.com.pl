@@ -9,9 +9,6 @@ import {
 
 import { toast } from "sonner";
 import Message from "@/components/Message";
-import dictionary, { type ObjectDict } from "@/dictionaries/dictionary.ts";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/store/store";
 import {
   Table,
   TableBody,
@@ -25,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import DeleteDialog from "@/components/DeleteDialog";
 import Pagination from "@/components/Pagination";
 import type { DataProducts, MessageProps } from "@/types";
+import { useTranslation } from "react-i18next";
 
 const loader =
   (language: string): LoaderFunction =>
@@ -46,41 +44,15 @@ const loader =
   };
 
 const ProductsListPage = () => {
+  const { t } = useTranslation();
   const data = useLoaderData<DataProducts | MessageProps>();
-  const { language } = useSelector((state: RootState) => state.ui);
   const submit = useSubmit();
-
-  const {
-    title_text,
-    title_textPL,
-    id,
-    idPL,
-    title,
-    titlePL,
-    category,
-    categoryPL,
-    price,
-    pricePL,
-    countInStock_text,
-    countInStock_textPL,
-    actions,
-    actionsPL,
-    edit,
-    editPL,
-    create,
-    createPL,
-  } = dictionary.productsList as ObjectDict;
 
   const deleteProductHandler = (id: string) => {
     submit(
       { id, intent: "delete" },
       { method: "delete", encType: "application/json" }
     );
-    // submit(id, { method: "post", encType: "text/plain" });
-    // submit(
-    //   { id },
-    //   { method: "post", encType: "application/x-www-form-urlencoded" }
-    // );
   };
 
   const createProductHandler = () => {
@@ -96,39 +68,37 @@ const ProductsListPage = () => {
     content = (
       <div>
         <Button className="float-right mb-4" onClick={createProductHandler}>
-          {language === "en" ? create : createPL}
+          {t("productsList.create")}
         </Button>
-        <Message info>{data.message}</Message>;
+        <Message info>{data.message}</Message>
       </div>
     );
   } else {
     const { products, pages } = data;
     content = (
       <div>
-        <h2 className="h2-semibold py-4">
-          {language === "en" ? title_text : title_textPL}
-        </h2>
+        <h2 className="h2-semibold py-4">{t("productsList.title_text")}</h2>
         <Button className="float-right mb-4" onClick={createProductHandler}>
-          {language === "en" ? create : createPL}
+          {t("productsList.create")}
         </Button>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{language === "en" ? id : idPL}</TableHead>
+              <TableHead>{t("productsList.id")}</TableHead>
               <TableHead className="text-center">
-                {language === "en" ? title : titlePL}
+                {t("productsList.title")}
               </TableHead>
               <TableHead className="text-center">
-                {language === "en" ? category : categoryPL}
+                {t("productsList.category")}
               </TableHead>
               <TableHead className="text-center">
-                {language === "en" ? price : pricePL}
+                {t("productsList.price")}
               </TableHead>
               <TableHead className="text-center">
-                {language === "en" ? countInStock_text : countInStock_textPL}
+                {t("productsList.countInStock_text")}
               </TableHead>
               <TableHead className="text-right">
-                {language === "en" ? actions : actionsPL}
+                {t("productsList.actions")}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -149,7 +119,7 @@ const ProductsListPage = () => {
                 <TableCell className="text-right space-x-2">
                   <Button asChild variant="outline">
                     <NavLink to={`/admin/product/${product.id}/edit`}>
-                      {language === "en" ? edit : editPL}
+                      {t("productsList.edit")}
                     </NavLink>
                   </Button>
                   <DeleteDialog
@@ -173,9 +143,6 @@ const action =
   async ({ request }: ActionFunctionArgs) => {
     const { id, intent } = await request.json();
     const { method } = request;
-    // const id = await request.text();
-    // const formData = await request.formData();
-    // console.log("id_action:", formData.get("id"));
 
     const token = localStorage.getItem("token");
 
@@ -192,7 +159,6 @@ const action =
       );
       if (!response.ok) {
         const resData = await response.json();
-        // throw new Error(resData.message);
         toast.error(resData.message);
       } else {
         const resData = await response.json();
@@ -216,7 +182,6 @@ const action =
       );
       if (!response.ok) {
         const resData = await response.json();
-        // throw new Error(resData.message);
         toast.error(resData.message);
       } else {
         const resData = await response.json();

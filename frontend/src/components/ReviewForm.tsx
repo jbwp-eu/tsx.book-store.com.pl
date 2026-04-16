@@ -1,8 +1,6 @@
 import { Button } from "./ui/button";
-import dictionary from "@/dictionaries/dictionary.ts";
 import { useSelector } from "react-redux";
 import { type RootState } from "@/store/store.ts";
-import { type ObjectDict } from "@/dictionaries/dictionary.ts";
 import { useSubmit } from "react-router-dom";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
@@ -19,7 +17,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
-import { useAppSelector } from "@/store/hook";
+import { useTranslation } from "react-i18next";
+import { translateLng } from "@/i18n/i18n";
 
 interface FormValues {
   title: string;
@@ -38,23 +37,7 @@ interface MyFormProps {
 }
 
 const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
-  const { language } = useAppSelector((state: RootState) => state.ui);
-
-  const {
-    button_submit,
-    button_submitPL,
-    title_label,
-    title_labelPL,
-    title_placeholder,
-    title_placeholderPL,
-    description_label,
-    description_labelPL,
-    description_placeholder,
-    description_placeholderPL,
-    select_text,
-    select_textPL,
-  } = dictionary.reviewForm as ObjectDict;
-
+  const { t } = useTranslation();
   const {
     values,
     errors,
@@ -63,28 +46,17 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
     handleBlur,
     handleSubmit,
     isSubmitting,
-    //other,
   } = props;
-
-  // console.log("touched:", touched);
-  // console.log("errors:", errors);
-  // console.log("values:", values);
 
   return (
     <form onSubmit={handleSubmit}>
       <p className="flex flex-col space-y-2 grow mt-4">
-        <Label htmlFor="title">
-          {language === "en" ? title_label : title_labelPL}
-        </Label>
+        <Label htmlFor="title">{t("reviewForm.title_label")}</Label>
         <Input
           id="title"
           type="text"
           name="title"
-          placeholder={
-            language === "en" ? title_placeholder : title_placeholderPL
-          }
-          // value={title}
-          // onChange={handleTitleChange}
+          placeholder={t("reviewForm.title_placeholder")}
           value={values.title}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -95,19 +67,11 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
       ) : null}
 
       <p className="flex flex-col space-y-2 grow mt-6">
-        <Label htmlFor="description">
-          {language === "en" ? description_label : description_labelPL}
-        </Label>
+        <Label htmlFor="description">{t("reviewForm.description_label")}</Label>
         <Textarea
           id="description"
           name="description"
-          placeholder={
-            language === "en"
-              ? description_placeholder
-              : description_placeholderPL
-          }
-          // value={description}
-          // onChange={handleDescriptionChange}
+          placeholder={t("reviewForm.description_placeholder")}
           value={values.description}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -118,9 +82,7 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
       ) : null}
 
       <p className="mt-6">
-        <Label htmlFor="rate">
-          {language === "en" ? select_text : select_textPL}
-        </Label>
+        <Label htmlFor="rate">{t("reviewForm.select_text")}</Label>
         <select
           id="rate"
           name="rate"
@@ -129,24 +91,12 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
           onBlur={handleBlur}
           className="w-full mt-2 border-input focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap flex"
         >
-          <option value="">
-            {language === "en" ? "Select ..." : "Wybierz ..."}
-          </option>
-          <option value="1">
-            {language === "en" ? "1 - Poor" : "1 - Słaba"}
-          </option>
-          <option value="2">
-            {language === "en" ? "2 - Fair" : "2 - Zadowalająca"}
-          </option>
-          <option value="3">
-            {language === "en" ? "3 - Good " : "3 - Dobra"}
-          </option>
-          <option value="4">
-            {language === "en" ? "4 - Very Good " : "4 - Bardzo dobra"}
-          </option>
-          <option value="5">
-            {language === "en" ? "5 - Excellent" : "5 -  Doskonała"}
-          </option>
+          <option value="">{t("reviewForm.rate_empty")}</option>
+          <option value="1">{t("reviewForm.rate_1")}</option>
+          <option value="2">{t("reviewForm.rate_2")}</option>
+          <option value="3">{t("reviewForm.rate_3")}</option>
+          <option value="4">{t("reviewForm.rate_4")}</option>
+          <option value="5">{t("reviewForm.rate_5")}</option>
         </select>
       </p>
       {touched.rate && errors.rate ? (
@@ -155,7 +105,7 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
 
       <AlertDialogFooter className="mt-4 space-x-4">
         <AlertDialogCancel asChild>
-          <Button variant="outline">Cancel</Button>
+          <Button variant="outline">{t("reviewForm.button_cancel")}</Button>
         </AlertDialogCancel>
         <Button
           type="submit"
@@ -165,7 +115,7 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
             !!(errors.description && touched.description)
           }
         >
-          {language === "en" ? button_submit : button_submitPL}
+          {t("reviewForm.button_submit")}
         </Button>
       </AlertDialogFooter>
     </form>
@@ -174,25 +124,8 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
 
 const ReviewForm = () => {
   const { language } = useSelector((state: RootState) => state.ui);
-  // const [title, setTitle] = useState("");
-  // const [description, setDescription] = useState("");
-  // const [rate, setRate] = useState("");
+  const { t } = useTranslation();
   const submit = useSubmit();
-
-  const {
-    button_write,
-    button_writePL,
-    title_text,
-    title_textPL,
-    description_text,
-    description_textPL,
-    yup_title,
-    yup_titlePL,
-    yup_description,
-    yup_descriptionPL,
-    yup_rate,
-    yup_ratePL,
-  } = dictionary.reviewForm as ObjectDict;
 
   const MyEnhancedForm = withFormik<MyFormProps, FormValues>({
     mapPropsToValues: (props) => ({
@@ -201,11 +134,15 @@ const ReviewForm = () => {
       rate: props.initialRate || "",
     }),
     validationSchema: Yup.object().shape({
-      title: Yup.string().required(language === "en" ? yup_title : yup_titlePL),
-      description: Yup.string().required(
-        language === "en" ? yup_description : yup_descriptionPL
+      title: Yup.string().required(
+        translateLng(language, "reviewForm.yup_title")
       ),
-      rate: Yup.string().required(language === "en" ? yup_rate : yup_ratePL),
+      description: Yup.string().required(
+        translateLng(language, "reviewForm.yup_description")
+      ),
+      rate: Yup.string().required(
+        translateLng(language, "reviewForm.yup_rate")
+      ),
     }),
     handleSubmit(
       { title, description, rate }: FormValues,
@@ -222,45 +159,17 @@ const ReviewForm = () => {
       setErrors({ title: "", description: "", rate: "" });
     },
   })(MyForm);
-  // const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setTitle(e.target.value);
-  // };
-
-  // const handleDescriptionChange = (
-  //   e: React.ChangeEvent<HTMLTextAreaElement>
-  // ) => {
-  //   setDescription(e.target.value);
-  // };
-
-  // const handleRatingChange = (value: string) => {
-  //   setRate(value);
-  // };
-
-  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   submit(
-  //     { title, description, rate },
-  //     {
-  //       method: "post",
-  //       encType: "application/json",
-  //     }
-  //   );
-  // };
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button className="mb-6">
-          {language === "en" ? button_write : button_writePL}
-        </Button>
+        <Button className="mb-6">{t("reviewForm.button_write")}</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            {language === "en" ? title_text : title_textPL}
-          </AlertDialogTitle>
+          <AlertDialogTitle>{t("reviewForm.title_text")}</AlertDialogTitle>
           <AlertDialogDescription>
-            {language === "en" ? description_text : description_textPL}
+            {t("reviewForm.description_text")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <MyEnhancedForm />

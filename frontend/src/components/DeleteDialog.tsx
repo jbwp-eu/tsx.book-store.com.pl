@@ -1,6 +1,5 @@
 import {
   AlertDialog,
-  // AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -10,47 +9,31 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import dictionary, { type ObjectDict } from "@/dictionaries/dictionary";
-import type { RootState } from "@/store/store";
-import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const DeleteDialog = ({
   onDelete,
 }: {
-  // onDelete: () => (id: string) => void;
   onDelete: () => void;
 }) => {
-  const { language } = useSelector((state: RootState) => state.ui);
-  const {
-    delete_text,
-    delete_textPL,
-    title,
-    titlePL,
-    description,
-    descriptionPL,
-  } = dictionary.alertDialog as ObjectDict;
+  const { t } = useTranslation();
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive">
-          {language === "en" ? delete_text : delete_textPL}
-        </Button>
+        <Button variant="destructive">{t("alertDialog.delete_text")}</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            {language === "en" ? title : titlePL}
-          </AlertDialogTitle>
+          <AlertDialogTitle>{t("alertDialog.title")}</AlertDialogTitle>
           <AlertDialogDescription>
-            {language === "en" ? description : descriptionPL}
+            {t("alertDialog.description")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          {/* <AlertDialogAction onClick={onDelete}>Delete</AlertDialogAction> */}
+          <AlertDialogCancel>{t("alertDialog.cancel")}</AlertDialogCancel>
           <Button variant="destructive" onClick={onDelete}>
-            {language === "en" ? delete_text : delete_textPL}
+            {t("alertDialog.delete_text")}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

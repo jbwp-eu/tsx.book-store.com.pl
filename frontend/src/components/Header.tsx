@@ -4,15 +4,16 @@ import Navigation from "./Navigation";
 import Search from "./Search";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
-import links from "@/links/links";
+import adminNavLinks from "@/links/links";
+import { useTranslation } from "react-i18next";
 import { Button } from "./ui/button";
 import { MenuIcon } from "lucide-react";
 import { useContext } from "react";
 import StateContextProvider from "./StateContext";
 
 const Header = () => {
+  const { t } = useTranslation();
   const { VITE_APP_NAME } = import.meta.env;
-  const { language } = useSelector((state: RootState) => state.ui);
   const { userInfo } = useSelector((state: RootState) => state.auth);
   const { setIsFilter, isAdminMenu, setIsAdminMenu, setIsCarousel } =
     useContext(StateContextProvider.Context);
@@ -63,7 +64,7 @@ const Header = () => {
 
           {userInfo.isAdmin && isAdminMenu && (
             <nav className="hidden lg:flex space-x-2 xl:space-x-4 ">
-              {links.map((link) => (
+              {adminNavLinks.map((link) => (
                 <Link
                   key={link.href}
                   to={link.href}
@@ -73,7 +74,7 @@ const Header = () => {
                       : "text-muted-foreground"
                   }`}
                 >
-                  {language === "en" ? link.title : link.titlePL}
+                  {t(link.titleKey)}
                 </Link>
               ))}
             </nav>

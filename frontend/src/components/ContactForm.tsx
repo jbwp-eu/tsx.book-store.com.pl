@@ -9,7 +9,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
-import dictionary, { type ObjectDict } from "@/dictionaries/dictionary";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
 import { Label } from "./ui/label";
@@ -20,6 +19,8 @@ import { useState } from "react";
 import { useSubmit } from "react-router-dom";
 import { withFormik, type FormikProps } from "formik";
 import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
+import { translateLng } from "@/i18n/i18n";
 
 interface FormValues {
   email: string;
@@ -36,21 +37,7 @@ interface MyFormProps {
 }
 
 const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
-  const { language } = useSelector((state: RootState) => state.ui);
-  const {
-    send,
-    sendPL,
-    label_email,
-    label_emailPL,
-    label_message,
-    label_messagePL,
-    email_placeholder,
-    email_placeholderPL,
-    text_placeholder,
-    text_placeholderPL,
-    sending,
-    sendingPL,
-  } = dictionary.contactForm as ObjectDict;
+  const { t } = useTranslation();
   const {
     values,
     errors,
@@ -59,24 +46,17 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
     handleBlur,
     handleSubmit,
     isSubmitting,
-    // title,
   } = props;
 
   return (
     <form onSubmit={handleSubmit}>
       <div className="space-y-2 mt-4 ">
-        <Label htmlFor="email">
-          {language === "en" ? label_email : label_emailPL}
-        </Label>
+        <Label htmlFor="email">{t("contactForm.label_email")}</Label>
         <Input
           id="email"
           type="email"
           name="email"
-          placeholder={
-            language === "en" ? email_placeholder : email_placeholderPL
-          }
-          // value={email}
-          // onChange={emailHandler}
+          placeholder={t("contactForm.email_placeholder")}
           value={values.email}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -87,17 +67,11 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
       ) : null}
 
       <div className="space-y-2 mt-6">
-        <Label htmlFor="text">
-          {language === "en" ? label_message : label_messagePL}
-        </Label>
+        <Label htmlFor="text">{t("contactForm.label_message")}</Label>
         <Textarea
           id="text"
           name="text"
-          placeholder={
-            language === "en" ? text_placeholder : text_placeholderPL
-          }
-          // value={text}
-          // onChange={textHandler}
+          placeholder={t("contactForm.text_placeholder")}
           value={values.text}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -116,36 +90,16 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
           !!(errors.text && touched.text)
         }
       >
-        {language === "en"
-          ? isSubmitting
-            ? sending
-            : send
-          : isSubmitting
-          ? sendingPL
-          : sendPL}
+        {isSubmitting ? t("contactForm.sending") : t("contactForm.send")}
       </Button>
     </form>
   );
 };
 
 const ContactForm = () => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  // const [email, setEmail] = useState("");
-  // const [text, setText] = useState("");
   const { language } = useSelector((state: RootState) => state.ui);
-
-  const {
-    contact,
-    contactPL,
-    title_text,
-    title_textPL,
-    yup_email,
-    yup_emailPL,
-    yup_text,
-    yup_textPL,
-    yup_email_req,
-    yup_email_reqPL,
-  } = dictionary.contactForm as ObjectDict;
 
   const submit = useSubmit();
 
@@ -156,9 +110,11 @@ const ContactForm = () => {
     }),
     validationSchema: Yup.object().shape({
       email: Yup.string()
-        .email(language === "en" ? yup_email : yup_emailPL)
-        .required(language === "en" ? yup_email_req : yup_email_reqPL),
-      text: Yup.string().required(language === "en" ? yup_text : yup_textPL),
+        .email(translateLng(language, "contactForm.yup_email"))
+        .required(translateLng(language, "contactForm.yup_email_req")),
+      text: Yup.string().required(
+        translateLng(language, "contactForm.yup_text")
+      ),
     }),
     handleSubmit({ email, text }: FormValues, { setSubmitting, setErrors }) {
       submit(
@@ -174,47 +130,16 @@ const ContactForm = () => {
     },
   })(MyForm);
 
-  // const emailHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setEmail(e.currentTarget.value);
-  // };
-
-  // const textHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-  //   setText(e.currentTarget.value);
-  // };
-
-  // const formData = new FormData();
-  // formData.append("email", email);
-  // formData.append("text", text);
-
-  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  // submit(formData, { method: "post" });
-  // submit(
-  //   { email, text },
-  //   {
-  //     method: "post",
-  //     encType: "application/json",
-  //   }
-  // );
-  // setOpen(false);
-  // setEmail("");
-  // setText("");
-  // };
-
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger className="hover:cursor-pointer">
         <Mail />
-        <h2 className="font-semibold">
-          {language === "en" ? contact : contactPL}
-        </h2>
+        <h2 className="font-semibold">{t("contactForm.contact")}</h2>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            <p className="h2-semibold">
-              {language === "en" ? title_text : title_textPL}
-            </p>
+            <p className="h2-semibold">{t("contactForm.title_text")}</p>
           </AlertDialogTitle>
           <AlertDialogDescription></AlertDialogDescription>
           <MyEnhancedForm />
@@ -225,14 +150,11 @@ const ContactForm = () => {
                 variant="outline"
                 onClick={() => {
                   setOpen(false);
-                  // setEmail("");
-                  // setText("");
                 }}
               >
-                Cancel
+                {t("reviewForm.button_cancel")}
               </Button>
             </AlertDialogCancel>
-            {/* <AlertDialogAction>Continue</AlertDialogAction> */}
           </AlertDialogFooter>
         </AlertDialogHeader>
       </AlertDialogContent>

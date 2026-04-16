@@ -11,16 +11,11 @@ import { ModeToggle } from "./ModeToggle";
 import { ShoppingCart } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Button } from "./ui/button";
-import { useSelector } from "react-redux";
-import { type RootState } from "@/store/store.ts";
-import dictionary from "@/dictionaries/dictionary.ts";
 import UserButton from "./UserButton";
-import { type ObjectDict } from "@/dictionaries/dictionary.ts";
+import { useTranslation } from "react-i18next";
 
 const Navigation = () => {
-  const { language } = useSelector((state: RootState) => state.ui);
-
-  const { cart, cartPL } = dictionary.navigation as ObjectDict;
+  const { t } = useTranslation();
 
   return (
     <div>
@@ -30,7 +25,7 @@ const Navigation = () => {
         <Button asChild variant="ghost">
           <NavLink to="/cart">
             <ShoppingCart />
-            {language === "en" ? cart : cartPL}
+            {t("navigation.cart")}
           </NavLink>
         </Button>
         <UserButton />
@@ -51,7 +46,7 @@ const Navigation = () => {
             >
               <NavLink to="/cart">
                 <ShoppingCart />
-                {language === "en" ? cart : cartPL}
+                {t("navigation.cart")}
               </NavLink>
             </Button>
             <UserButton />

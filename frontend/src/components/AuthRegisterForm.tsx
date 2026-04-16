@@ -7,14 +7,14 @@ import {
   useSubmit,
 } from "react-router-dom";
 import { type RootState } from "@/store/store";
-import dictionary from "@/dictionaries/dictionary";
 import { useEffect } from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { type ObjectDict } from "@/dictionaries/dictionary";
 import { withFormik, type FormikProps, type FormikHelpers } from "formik";
 import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
+import { translateLng } from "@/i18n/i18n";
 
 interface FormValues {
   email: string;
@@ -45,45 +45,12 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
     handleBlur,
     handleSubmit,
     isSubmitting,
-    //other,
   } = props;
-
-  // console.log("errors:", errors);
-  // console.log("values:", values);
-  // console.log("touched:", touched);
 
   const [searchParams] = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
 
-  const { language } = useAppSelector((state: RootState) => state.ui);
-
-  const {
-    signIn,
-    signInPL,
-    register,
-    registerPL,
-    email_label,
-    email_placeholder,
-    email_placeholderPL,
-    password_label,
-    password_labelPL,
-    password_placeholder,
-    password_placeholderPL,
-    name_label,
-    name_labelPL,
-    newCustomer,
-    newCustomerPL,
-    name_placeholder,
-    name_placeholderPL,
-    confirmPassword_placeholder,
-    confirmPassword_placeholderPL,
-    confirmPassword_label,
-    confirmPassword_labelPL,
-    customer,
-    customerPL,
-    sending,
-    sendingPL,
-  } = dictionary.authRegisterForm as ObjectDict;
+  const { t } = useTranslation();
 
   const { pathname } = useLocation();
 
@@ -96,19 +63,15 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
   const authForm = (
     <>
       <p className="flex flex-col space-y-2 mt-8">
-        <Label htmlFor="email">{email_label}</Label>
+        <Label htmlFor="email">{t("authRegisterForm.email_label")}</Label>
         <Input
           id="email"
           type="email"
           name="email"
-          placeholder={
-            language === "en" ? email_placeholder : email_placeholderPL
-          }
+          placeholder={t("authRegisterForm.email_placeholder")}
           value={values.email}
           onChange={handleChange}
           onBlur={handleBlur}
-          // value={emailValue}
-          // onChange={handleEmailChange}
         />
       </p>
       {touched.email && errors.email ? (
@@ -116,21 +79,15 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
       ) : null}
 
       <p className="flex flex-col space-y-2 mt-8">
-        <Label htmlFor="password">
-          {language === "en" ? password_label : password_labelPL}
-        </Label>
+        <Label htmlFor="password">{t("authRegisterForm.password_label")}</Label>
         <Input
           id="password"
           type="password"
           name="password"
-          placeholder={
-            language === "en" ? password_placeholder : password_placeholderPL
-          }
+          placeholder={t("authRegisterForm.password_placeholder")}
           value={values.password}
           onChange={handleChange}
           onBlur={handleBlur}
-          // value={passwordValue}
-          // onChange={handlePasswordChange}
         />
       </p>
       {touched.password && errors.password ? (
@@ -143,12 +100,10 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
       <div className="sm:w-md mx-auto mt-6">
         {pathname === "/login" && (
           <>
-            <h2 className="h2-semibold">
-              {language === "en" ? signIn : signInPL}
-            </h2>
+            <h2 className="h2-semibold">{t("authRegisterForm.signIn")}</h2>
             {authForm}
             <div className="flex gap-2 mt-6 items-center">
-              {language === "en" ? newCustomer : newCustomerPL}
+              {t("authRegisterForm.newCustomer")}
               <Link
                 to={
                   redirect !== "/"
@@ -157,29 +112,21 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
                 }
                 className="hover:underline"
               >
-                {language === "en" ? register : registerPL}
+                {t("authRegisterForm.register")}
               </Link>
             </div>
           </>
         )}
         {pathname === "/register" && (
           <>
-            <h2 className="h2-semibold">
-              {language === "en" ? register : registerPL}
-            </h2>
+            <h2 className="h2-semibold">{t("authRegisterForm.register")}</h2>
             <p className="flex flex-col space-y-2 mt-8">
-              <Label htmlFor="name">
-                {language === "en" ? name_label : name_labelPL}
-              </Label>
+              <Label htmlFor="name">{t("authRegisterForm.name_label")}</Label>
               <Input
                 id="name"
                 type="text"
                 name="name"
-                placeholder={
-                  language === "en" ? name_placeholder : name_placeholderPL
-                }
-                // value={nameValue}
-                // onChange={handleNameChange}
+                placeholder={t("authRegisterForm.name_placeholder")}
                 value={values.name}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -192,22 +139,13 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
             {authForm}
             <p className="flex flex-col space-y-2 mt-8">
               <Label htmlFor="confirmPassword">
-                {language === "en"
-                  ? confirmPassword_label
-                  : confirmPassword_labelPL}
+                {t("authRegisterForm.confirmPassword_label")}
               </Label>
               <Input
                 id="confirmPassword"
-                placeholder={
-                  language === "en"
-                    ? confirmPassword_placeholder
-                    : confirmPassword_placeholderPL
-                }
+                placeholder={t("authRegisterForm.confirmPassword_placeholder")}
                 type="password"
                 name="confirmPassword"
-                // value={userInfo.confirmPassword}
-                // value={confirmPassword}
-                // onChange={handleConfirmPasswordChange}
                 value={values.confirmPassword}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -223,19 +161,15 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
                 id="storeTerms"
                 type="checkbox"
                 name="storeTerms"
-                // checked={isAdmin_value}
-                // onChange={handleIsAdminChange}
                 checked={values.storeTerms}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="h-4 w-4"
               />
               <Label htmlFor="storeTerms">
-                {language === "en" ? "Accept" : "Zaakceptuj"}
+                {t("authRegisterForm.terms_accept")}{" "}
                 <Link to="/regulations" className="hover:underline">
-                  {language === "en"
-                    ? "the Store regulations"
-                    : "regulamin sklepu"}
+                  {t("authRegisterForm.terms_link")}
                 </Link>
               </Label>
             </p>
@@ -244,34 +178,27 @@ const MyForm = (props: OtherProps & FormikProps<FormValues>) => {
             ) : null}
 
             <div className="flex gap-2 mt-6 items-center">
-              <p>{language === "en" ? customer : customerPL}</p>
+              <p>{t("authRegisterForm.customer")}</p>
 
               <Link
                 to={redirect !== "/" ? `/login?redirect=${redirect}` : "/login"}
                 className="hover:underline"
               >
-                {language === "en" ? signIn : signInPL}
+                {t("authRegisterForm.signIn")}
               </Link>
             </div>
           </>
         )}
-        {/* actions */}
         <div className="flex gap-4 mt-6 justify-end">
           <Button type="button" variant="ghost" onClick={cancelHandler}>
-            Cancel
+            {t("authRegisterForm.button_cancel")}
           </Button>
           <Button type="submit">
             {isSubmitting
-              ? language === "en"
-                ? sending
-                : sendingPL
+              ? t("authRegisterForm.sending")
               : pathname === "/login"
-              ? language === "en"
-                ? signIn
-                : signInPL
-              : language === "en"
-              ? register
-              : registerPL}
+                ? t("authRegisterForm.signIn")
+                : t("authRegisterForm.register")}
           </Button>
         </div>
       </div>
@@ -288,24 +215,6 @@ const AuthRegisterForm = () => {
   const navigate = useNavigate();
   const { language } = useAppSelector((state: RootState) => state.ui);
   const submit = useSubmit();
-  const {
-    yup_email,
-    yup_emailPL,
-    yup_email_req,
-    yup_email_reqPL,
-    yup_name,
-    yup_namePL,
-    yup_MustBe,
-    yup_MustBePL,
-    yup_password,
-    yup_passwordPL,
-    yup_storeTerms,
-    yup_storeTermsPL,
-    yup_confirmPassword,
-    yup_confirmPasswordPL,
-    doNotMatch,
-    doNotMatchPL,
-  } = dictionary.authRegisterForm as ObjectDict;
 
   const redirect = searchParams.get("redirect") || "/";
 
@@ -319,11 +228,11 @@ const AuthRegisterForm = () => {
 
   const autchSchema = {
     email: Yup.string()
-      .email(language === "en" ? yup_email : yup_emailPL)
-      .required(language === "en" ? yup_email_req : yup_email_reqPL),
+      .email(translateLng(language, "authRegisterForm.yup_email"))
+      .required(translateLng(language, "authRegisterForm.yup_email_req")),
     password: Yup.string()
-      .min(4, language === "en" ? yup_MustBe : yup_MustBePL)
-      .required(language === "en" ? yup_password : yup_passwordPL),
+      .min(4, translateLng(language, "authRegisterForm.yup_MustBe"))
+      .required(translateLng(language, "authRegisterForm.yup_password")),
   };
 
   const MyEnhancedForm = withFormik<MyFormProps, FormValues>({
@@ -340,11 +249,11 @@ const AuthRegisterForm = () => {
         : {
             ...autchSchema,
             name: Yup.string().required(
-              language === "en" ? yup_name : yup_namePL
+              translateLng(language, "authRegisterForm.yup_name")
             ),
             storeTerms: Yup.boolean().oneOf(
               [true],
-              language === "en" ? yup_storeTerms : yup_storeTermsPL
+              translateLng(language, "authRegisterForm.yup_storeTerms")
             ),
             confirmPassword: Yup.string().when(
               "password",
@@ -352,13 +261,14 @@ const AuthRegisterForm = () => {
                 return password[0]
                   ? field
                       .required(
-                        language === "en"
-                          ? yup_confirmPassword
-                          : yup_confirmPasswordPL
+                        translateLng(
+                          language,
+                          "authRegisterForm.yup_confirmPassword"
+                        )
                       )
                       .oneOf(
                         [Yup.ref("password")],
-                        language === "en" ? doNotMatch : doNotMatchPL
+                        translateLng(language, "authRegisterForm.doNotMatch")
                       )
                   : field;
               }

@@ -1,4 +1,3 @@
-import dictionary, { type ObjectDict } from "@/dictionaries/dictionary";
 import type { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
 import { Label } from "./ui/label";
@@ -9,11 +8,14 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useSubmit } from "react-router-dom";
 import { Textarea } from "./ui/textarea";
 import { Card, CardContent } from "./ui/card";
+import { useTranslation } from "react-i18next";
+import { translateLng } from "@/i18n/i18n";
 
 const MAX_COUNT = 2;
 
 const ProductEditForm = ({ product }: { product: Product }) => {
   const { language } = useSelector((state: RootState) => state.ui);
+  const { t } = useTranslation();
   const submit = useSubmit();
 
   const [isFeatured, setIsFeatured] = useState(false);
@@ -31,49 +33,6 @@ const ProductEditForm = ({ product }: { product: Product }) => {
     (string | ArrayBuffer | null)[]
   >([]);
 
-  // console.log("fileLimit_2:", fileLimit_2);
-  // console.log("uploadedFiles_2:", uploadedFiles_2);
-  // console.log("previewUrl_2:", previewUrl_2);
-
-  const {
-    title_text,
-    title_textPL,
-    title_label,
-    title_labelPL,
-    title_placeholder,
-    title_placeholderPL,
-    description_label,
-    description_labelPL,
-    description_placeholder,
-    description_placeholderPL,
-    price_label,
-    price_labelPL,
-    price_placeholder,
-    price_placeholderPL,
-    category_label,
-    category_labelPL,
-    category_placeholder,
-    category_placeholderPL,
-    countInStock_label,
-    countInStock_labelPL,
-    countInStock_placeholder,
-    countInStock_placeholderPL,
-    pick_button_label,
-    pick_button_labelPL,
-    update,
-    updatePL,
-    pick_image_text,
-    pick_image_textPL,
-    alert_text,
-    alert_textPL,
-    loaded_text,
-    loaded_textPL,
-    loaded_2_text,
-    loaded_2_textPL,
-    featuredProduct,
-    featuredProductPL,
-  } = dictionary.productEditForm as ObjectDict;
-
   const title = useRef<HTMLInputElement>(null);
   const description = useRef<HTMLTextAreaElement>(null);
   const price = useRef<HTMLInputElement>(null);
@@ -84,8 +43,6 @@ const ProductEditForm = ({ product }: { product: Product }) => {
 
   const submitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    //   /* 1 */
-    // const formData = new FormData(e.currentTarget);
     const formData = new FormData();
     formData.append("title", title.current!.value);
     formData.append("description", description.current!.value);
@@ -98,37 +55,12 @@ const ProductEditForm = ({ product }: { product: Product }) => {
     for (let i = 0; i < uploadedFiles_2.length; i++) {
       formData.append("banners", uploadedFiles_2[i]);
     }
-    // formData.append("banner", uploadedFiles_2[0]);
     formData.append("isFeatured", isFeatured.toString());
 
-    //   /* 2 */
-    //   // const enteredTitle = title.current!.value;
-    //   // const enteredDescription = description.current!.value;
-    //   // const enteredPrice = price.current!.value;
-    //   // const enteredCategory = category.current!.value;
-    //   // const enteredCountInStock = countInStock.current!.value;
-    //   // const enteredImage = image.current!.value;
-
-    submit(
-      //     /* 1 */
-      formData,
-      //     /* 2 */
-      //     // {
-      //     //   enteredTitle,
-      //     //   enteredDescription,
-      //     //   enteredPrice,
-      //     //   enteredCategory,
-      //     //   enteredCountInStock,
-      //     //   enteredImage,
-      //     // },
-
-      {
-        method: "patch",
-        encType: "multipart/form-data",
-        // encType: "application/x-www-form-urlencoded",
-        // encType: "application/json",
-      }
-    );
+    submit(formData, {
+      method: "patch",
+      encType: "multipart/form-data",
+    });
   };
 
   const handleUploadFiles = (files: File[]) => {
@@ -155,9 +87,9 @@ const ProductEditForm = ({ product }: { product: Product }) => {
           setFileLimit(true);
         } else {
           alert(
-            language === "en"
-              ? `${alert_text} ${MAX_COUNT} files`
-              : `${alert_textPL} ${MAX_COUNT} pliki`
+            translateLng(language, "productEditForm.alert_limit", {
+              count: MAX_COUNT,
+            })
           );
           return true;
         }
@@ -199,21 +131,14 @@ const ProductEditForm = ({ product }: { product: Product }) => {
 
   return (
     <div>
-      <h2 className="h2-semibold py-4">
-        {language === "en" ? title_text : title_textPL}
-      </h2>
+      <h2 className="h2-semibold py-4">{t("productEditForm.title_text")}</h2>
       <form onSubmit={submitHandler}>
-        {/* <Form method="patch"> */}
         <div className="flex flex-col md:flex-row md:gap-4">
           <p className="flex flex-col space-y-2 grow mt-4">
-            <Label htmlFor="title">
-              {language === "en" ? title_label : title_labelPL}
-            </Label>
+            <Label htmlFor="title">{t("productEditForm.title_label")}</Label>
             <Input
               id="title"
-              placeholder={
-                language === "en" ? title_placeholder : title_placeholderPL
-              }
+              placeholder={t("productEditForm.title_placeholder")}
               type="text"
               name="title"
               defaultValue={product.title}
@@ -221,16 +146,10 @@ const ProductEditForm = ({ product }: { product: Product }) => {
             />
           </p>
           <p className="flex flex-col space-y-2 grow mt-4">
-            <Label htmlFor="category">
-              {language === "en" ? category_label : category_labelPL}
-            </Label>
+            <Label htmlFor="category">{t("productEditForm.category_label")}</Label>
             <Input
               id="category"
-              placeholder={
-                language === "en"
-                  ? category_placeholder
-                  : category_placeholderPL
-              }
+              placeholder={t("productEditForm.category_placeholder")}
               type="text"
               name="category"
               defaultValue={product.category}
@@ -241,15 +160,11 @@ const ProductEditForm = ({ product }: { product: Product }) => {
         <div className="flex flex-col md:flex-row md:gap-4 ">
           <p className="flex flex-col space-y-2 grow mt-4">
             <Label htmlFor="countInStock">
-              {language === "en" ? countInStock_label : countInStock_labelPL}
+              {t("productEditForm.countInStock_label")}
             </Label>
             <Input
               id="countInStock"
-              placeholder={
-                language === "en"
-                  ? countInStock_placeholder
-                  : countInStock_placeholderPL
-              }
+              placeholder={t("productEditForm.countInStock_placeholder")}
               type="number"
               name="countInStock"
               defaultValue={product.countInStock}
@@ -257,14 +172,10 @@ const ProductEditForm = ({ product }: { product: Product }) => {
             />
           </p>
           <p className="flex flex-col space-y-2 grow mt-4">
-            <Label htmlFor="price">
-              {language === "en" ? price_label : price_labelPL}
-            </Label>
+            <Label htmlFor="price">{t("productEditForm.price_label")}</Label>
             <Input
               id="price"
-              placeholder={
-                language === "en" ? price_placeholder : price_placeholderPL
-              }
+              placeholder={t("productEditForm.price_placeholder")}
               type="number"
               min="0"
               step="any"
@@ -276,15 +187,11 @@ const ProductEditForm = ({ product }: { product: Product }) => {
         </div>
         <p className="flex flex-col space-y-2 mt-4 ">
           <Label htmlFor="description">
-            {language === "en" ? description_label : description_labelPL}
+            {t("productEditForm.description_label")}
           </Label>
           <Textarea
             id="description"
-            placeholder={
-              language === "en"
-                ? description_placeholder
-                : description_placeholderPL
-            }
+            placeholder={t("productEditForm.description_placeholder")}
             name="description"
             defaultValue={product.description}
             ref={description}
@@ -309,7 +216,7 @@ const ProductEditForm = ({ product }: { product: Product }) => {
                   <img
                     key={url}
                     src={url}
-                    alt={language === "en" ? "Preview" : "Podgląd"}
+                    alt={t("productEditForm.preview_alt")}
                     className="w-30 mt-4"
                   />
                 )
@@ -317,9 +224,7 @@ const ProductEditForm = ({ product }: { product: Product }) => {
         </div>
 
         {previewUrl.length === 0 && (
-          <p className="mt-4">
-            {language === "en" ? pick_image_text : pick_image_textPL}
-          </p>
+          <p className="mt-4">{t("productEditForm.pick_image_text")}</p>
         )}
 
         <p className="flex justify-between mt-4 ">
@@ -331,12 +236,8 @@ const ProductEditForm = ({ product }: { product: Product }) => {
             disabled={fileLimit}
           >
             {fileLimit
-              ? language === "en"
-                ? loaded_text
-                : loaded_textPL
-              : language === "en"
-              ? pick_button_label
-              : pick_button_labelPL}
+              ? t("productEditForm.loaded_text")
+              : t("productEditForm.pick_button_label")}
           </Button>
         </p>
 
@@ -344,7 +245,7 @@ const ProductEditForm = ({ product }: { product: Product }) => {
           <CardContent>
             <p className="flex flex-col space-y-2 items-start">
               <Label htmlFor="isFeatured">
-                {language === "en" ? featuredProduct : featuredProductPL}
+                {t("productEditForm.featuredProduct")}
               </Label>
               <Input
                 id="isFeatured"
@@ -375,7 +276,7 @@ const ProductEditForm = ({ product }: { product: Product }) => {
                           <img
                             key={url}
                             src={url}
-                            alt={language === "en" ? "Preview" : "Podgląd"}
+                            alt={t("productEditForm.preview_alt")}
                             className="w-60 mt-4"
                           />
                         )
@@ -383,9 +284,7 @@ const ProductEditForm = ({ product }: { product: Product }) => {
                 </div>
 
                 {previewUrl_2.length === 0 && (
-                  <p className="mt-4">
-                    {language === "en" ? pick_image_text : pick_image_textPL}
-                  </p>
+                  <p className="mt-4">{t("productEditForm.pick_image_text")}</p>
                 )}
 
                 <p className="flex justify-between mt-4 ">
@@ -397,12 +296,8 @@ const ProductEditForm = ({ product }: { product: Product }) => {
                     disabled={fileLimit_2}
                   >
                     {fileLimit_2
-                      ? language === "en"
-                        ? loaded_2_text
-                        : loaded_2_textPL
-                      : language === "en"
-                      ? pick_button_label
-                      : pick_button_labelPL}
+                      ? t("productEditForm.loaded_2_text")
+                      : t("productEditForm.pick_button_label")}
                   </Button>
                 </p>
               </div>
@@ -411,10 +306,8 @@ const ProductEditForm = ({ product }: { product: Product }) => {
         </Card>
 
         <Button type="submit" className="float-right">
-          {language === "en" ? update : updatePL}
+          {t("productEditForm.update")}
         </Button>
-
-        {/* </Form> */}
       </form>
     </div>
   );

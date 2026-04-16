@@ -1,44 +1,11 @@
-import dictionary, { type ObjectDict } from "@/dictionaries/dictionary";
+export type AdminNavLink = { href: string; titleKey: string };
 
-const {
-  products,
-  productsPL,
-  orders,
-  ordersPL,
-  users,
-  usersPL,
-  reviews,
-  reviewsPL,
-  overview,
-  overviewPL,
-} = dictionary.navigation as ObjectDict;
-
-const links = [
-  {
-    href: "/admin/overview",
-    title: overview,
-    titlePL: overviewPL,
-  },
-  {
-    href: "/admin/productsList",
-    title: products,
-    titlePL: productsPL,
-  },
-  {
-    href: "/admin/ordersList",
-    title: orders,
-    titlePL: ordersPL,
-  },
-  {
-    href: "/admin/usersList",
-    title: users,
-    titlePL: usersPL,
-  },
-  {
-    href: "/admin/reviewsList",
-    title: reviews,
-    titlePL: reviewsPL,
-  },
+const adminNavLinks: AdminNavLink[] = [
+  { href: "/admin/overview", titleKey: "navigation.overview" },
+  { href: "/admin/productsList", titleKey: "navigation.products" },
+  { href: "/admin/ordersList", titleKey: "navigation.orders" },
+  { href: "/admin/usersList", titleKey: "navigation.users" },
+  { href: "/admin/reviewsList", titleKey: "navigation.reviews" },
 ];
 
-export default links;
+export default adminNavLinks;

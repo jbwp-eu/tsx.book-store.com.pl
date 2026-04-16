@@ -10,12 +10,9 @@ import {
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { useSelector } from "react-redux";
-import { type RootState } from "@/store/store.ts";
-import dictionary from "@/dictionaries/dictionary.ts";
 import { useLocation } from "react-router-dom";
-import { type ObjectDict } from "@/dictionaries/dictionary";
 import { CircleAlert } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const Message = ({
   children,
@@ -26,8 +23,7 @@ const Message = ({
   className?: string;
   info?: boolean;
 }) => {
-  const { language } = useSelector((state: RootState) => state.ui);
-  const { button, buttonPL } = dictionary.message as ObjectDict;
+  const { t } = useTranslation();
   const location = useLocation();
 
   return (
@@ -44,7 +40,7 @@ const Message = ({
             className
           )}
         >
-          {!info && (language === "en" ? "Error" : "Błąd")}
+          {!info && t("message.error_title")}
         </CardTitle>
         <CardDescription
           className={cn(
@@ -65,7 +61,7 @@ const Message = ({
             size="sm"
             className={cn("font-normal", className)}
           >
-            <Link to={"/"}>{language === "en" ? button : buttonPL}</Link>
+            <Link to={"/"}>{t("message.button")}</Link>
           </Button>
         )}
       </CardFooter>

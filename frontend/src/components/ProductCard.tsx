@@ -2,17 +2,14 @@ import { type Product } from "@/types";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { Link } from "react-router-dom";
 import Image from "./Image";
-import dictionary, { type ObjectDict } from "@/dictionaries/dictionary";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/store/store";
 import Rating from "./Rating";
 import ProductPrice from "./ProductPrice";
 import { formatCurrency } from "@/utils/formatUtils";
+import { useTranslation } from "react-i18next";
 
 const ProductCard = ({ product }: { product: Product }) => {
-  const { category, categoryPL, out_of_stock, out_of_stockPL } =
-    dictionary.productCard as ObjectDict;
-  const { language } = useSelector((state: RootState) => state.ui);
+  const { t } = useTranslation();
+
   return (
     <Card className="w-full justify-self-center gap-3 py-2 text-card-foreground/75">
       <CardHeader className="p-2 items-center">
@@ -25,9 +22,7 @@ const ProductCard = ({ product }: { product: Product }) => {
       </CardHeader>
       <CardContent className="p-4 grid gap-4">
         <p className="text-sm lg:text-base font-normal">
-          {language === "en" && product.category === "books"
-            ? category
-            : categoryPL}
+          {t("productCard.category")}
         </p>
         <Link to={`/product/${product.id}`}>
           <p className="text-base lg:text-lg font-medium">{product.title}</p>
@@ -38,9 +33,7 @@ const ProductCard = ({ product }: { product: Product }) => {
             {formatCurrency(product.price)}
           </ProductPrice>
         ) : (
-          <p className="text-destructive">
-            {language === "en" ? out_of_stock : out_of_stockPL}
-          </p>
+          <p className="text-destructive">{t("productCard.out_of_stock")}</p>
         )}
       </CardContent>
     </Card>

@@ -1,4 +1,5 @@
 import Container from "../components/Container";
+import DemoNoticeBanner from "../components/DemoNoticeBanner";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { Outlet, useLoaderData, useNavigation } from "react-router-dom";
@@ -32,6 +33,7 @@ const RootLayout = () => {
     <div className={cn("flex flex-col")}>
       <Toaster richColors expand position="bottom-right" />
       <Header />
+      <DemoNoticeBanner />
       <main className="min-h-screen">
         <Container>
           {navigation.state === "loading" ? <Fallback asOverlay /> : <Outlet />}

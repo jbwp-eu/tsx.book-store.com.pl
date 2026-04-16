@@ -10,12 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import dictionary from "@/dictionaries/dictionary";
-import { type ObjectDict } from "@/dictionaries/dictionary";
-import type { RootState } from "@/store/store";
 import type { MessageProps, User } from "@/types";
 import { formatId } from "@/utils/formatUtils";
-import { useSelector } from "react-redux";
 import {
   NavLink,
   useLoaderData,
@@ -23,6 +19,7 @@ import {
   type ActionFunctionArgs,
 } from "react-router-dom";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const loader = (language: string) => async () => {
   const token = localStorage.getItem("token");
@@ -37,7 +34,6 @@ const loader = (language: string) => async () => {
   );
   if (!response.ok) {
     const resData = await response.json();
-    // throw new Error(resData.message);
     toast.error(resData.message);
     return resData;
   } else {
@@ -46,30 +42,9 @@ const loader = (language: string) => async () => {
 };
 
 const UsersListPage = () => {
+  const { t } = useTranslation();
   const data = useLoaderData<User[] | MessageProps>();
   const submit = useSubmit();
-
-  const { language } = useSelector((state: RootState) => state.ui);
-
-  const {
-    title,
-    titlePL,
-    id,
-    idPL,
-    name,
-    namePL,
-    email,
-    role,
-    rolePL,
-    actions,
-    actionsPL,
-    user_text,
-    user_textPL,
-    admin,
-    adminPL,
-    edit,
-    editPL,
-  } = dictionary.usersList as ObjectDict;
 
   const deleteUserHandler = (id: string) => {
     submit(
@@ -88,22 +63,20 @@ const UsersListPage = () => {
   } else {
     content = (
       <div>
-        <h2 className="h2-semibold py-4">
-          {language === "en" ? title : titlePL}
-        </h2>
+        <h2 className="h2-semibold py-4">{t("usersList.title")}</h2>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{language === "en" ? id : idPL}</TableHead>
+              <TableHead>{t("usersList.id")}</TableHead>
               <TableHead className="text-center">
-                {language === "en" ? name : namePL}
+                {t("usersList.name")}
               </TableHead>
-              <TableHead className="text-center">{email}</TableHead>
+              <TableHead className="text-center">{t("usersList.email")}</TableHead>
               <TableHead className="text-center">
-                {language === "en" ? role : rolePL}
+                {t("usersList.role")}
               </TableHead>
               <TableHead className="text-right">
-                {language === "en" ? actions : actionsPL}
+                {t("usersList.actions")}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -115,25 +88,17 @@ const UsersListPage = () => {
                 <TableCell className="text-center"> {user.email}</TableCell>
                 <TableCell className="text-center">
                   {user.isAdmin ? (
-                    <Badge>{language === "en" ? admin : adminPL}</Badge>
+                    <Badge>{t("usersList.admin")}</Badge>
                   ) : (
-                    <Badge variant="outline">
-                      {language === "en" ? user_text : user_textPL}
-                    </Badge>
+                    <Badge variant="outline">{t("usersList.user_text")}</Badge>
                   )}
                 </TableCell>
                 <TableCell className="text-right space-x-4">
                   <Button asChild variant="outline">
                     <NavLink to={`/admin/user/${user.id}/edit`}>
-                      {language === "en" ? edit : editPL}
+                      {t("usersList.edit")}
                     </NavLink>
                   </Button>
-                  {/* <Button
-                    variant="destructive"
-                    onClick={() => deleteUserHandler(user.id)}
-                  >
-                    {language === "en" ? delete_text : delete_textPL}
-                  </Button> */}
                   <DeleteDialog onDelete={() => deleteUserHandler(user.id)} />
                 </TableCell>
               </TableRow>
@@ -166,7 +131,6 @@ const action =
     );
     if (!response.ok) {
       const resData = await response.json();
-      // throw new Error(resData.message);
       toast.error(resData.message);
     } else {
       const resData = await response.json();

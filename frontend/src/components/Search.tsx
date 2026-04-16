@@ -1,19 +1,16 @@
-import dictionary, { type ObjectDict } from "@/dictionaries/dictionary";
 import { Input } from "./ui/input";
-import type { RootState } from "@/store/store";
-import { useAppSelector } from "@/store/hook";
 import { SearchIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { useContext, useState } from "react";
 import { useSearchParams, useSubmit } from "react-router-dom";
 import FilterContextProvider from "./StateContext";
+import { useTranslation } from "react-i18next";
 
 const Search = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const submit = useSubmit();
-  const { search_text, search_textPL } = dictionary.search as ObjectDict;
-  const { language } = useAppSelector((state: RootState) => state.ui);
 
   const { isFilter, setIsFilter } = useContext(FilterContextProvider.Context);
 
@@ -37,7 +34,7 @@ const Search = () => {
       <form onSubmit={submitHandler}>
         <div className="flex space-x-2">
           <Input
-            placeholder={language === "en" ? search_text : search_textPL}
+            placeholder={t("search.search_text")}
             type="text"
             value={search}
             onChange={handleSearchChange}

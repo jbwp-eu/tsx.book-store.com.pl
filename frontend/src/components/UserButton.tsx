@@ -1,6 +1,5 @@
 import { useAppSelector } from "@/store/hook";
 import { Button } from "./ui/button";
-import dictionary from "@/dictionaries/dictionary";
 import { NavLink } from "react-router-dom";
 import { UserIcon } from "lucide-react";
 import {
@@ -13,39 +12,12 @@ import {
 import { logout } from "@/store/authSlice";
 import { useAppDispatch } from "@/store/hook";
 import { toast } from "sonner";
-import { type ObjectDict } from "@/dictionaries/dictionary";
 import { useContext } from "react";
 import StateContextProvider from "./StateContext";
+import { useTranslation } from "react-i18next";
 
 const UserButton = () => {
-  const {
-    signIn,
-    signInPL,
-    signOut,
-    signOutPL,
-    message_signOut,
-    message_signOutPL,
-    userProfile,
-    userProfilePL,
-    orderHistory,
-    orderHistoryPL,
-    products,
-    orders,
-    users,
-    productsPL,
-    ordersPL,
-    usersPL,
-    reviewList,
-    reviewListPL,
-    reviews,
-    reviewsPL,
-    overview,
-    overviewPL,
-    admin_text,
-    admin_textPL,
-  } = dictionary.navigation as ObjectDict;
-
-  const { language } = useAppSelector((state) => state.ui);
+  const { t } = useTranslation();
   const { userInfo } = useAppSelector((state) => state.auth);
   const { setIsAdminMenu, setIsCarousel } = useContext(
     StateContextProvider.Context
@@ -60,7 +32,7 @@ const UserButton = () => {
         <NavLink to="/login">
           {" "}
           <UserIcon />
-          {language === "en" ? signIn : signInPL}
+          {t("navigation.signIn")}
         </NavLink>
       </Button>
     );
@@ -94,17 +66,17 @@ const UserButton = () => {
             </DropdownMenuLabel>
             <DropdownMenuItem>
               <NavLink to="/profile" className="hover:font-bold">
-                {language === "en" ? userProfile : userProfilePL}
+                {t("navigation.userProfile")}
               </NavLink>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <NavLink to="/orders" className="hover:font-bold">
-                {language === "en" ? orderHistory : orderHistoryPL}
+                {t("navigation.orderHistory")}
               </NavLink>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <NavLink to="/reviews" className="hover:font-bold">
-                {language === "en" ? reviewList : reviewListPL}
+                {t("navigation.reviewList")}
               </NavLink>
             </DropdownMenuItem>
 
@@ -118,7 +90,7 @@ const UserButton = () => {
                     setIsCarousel(false);
                   }}
                 >
-                  {language === "en" ? admin_text : admin_textPL}
+                  {t("navigation.admin_text")}
                 </NavLink>
               </DropdownMenuItem>
             )}
@@ -127,32 +99,32 @@ const UserButton = () => {
               <DropdownMenuItem className="block lg:hidden">
                 <DropdownMenu>
                   <DropdownMenuTrigger className="hover:font-bold">
-                    {language === "en" ? admin_text : admin_textPL}
+                    {t("navigation.admin_text")}
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem className="hover:font-bold ">
                       <NavLink to="/admin/overview">
-                        {language === "en" ? overview : overviewPL}
+                        {t("navigation.overview")}
                       </NavLink>
                     </DropdownMenuItem>
                     <DropdownMenuItem className="hover:font-bold ">
                       <NavLink to="/admin/productsList">
-                        {language === "en" ? products : productsPL}
+                        {t("navigation.products")}
                       </NavLink>
                     </DropdownMenuItem>
                     <DropdownMenuItem className="hover:font-bold">
                       <NavLink to="/admin/ordersList">
-                        {language === "en" ? orders : ordersPL}
+                        {t("navigation.orders")}
                       </NavLink>
                     </DropdownMenuItem>
                     <DropdownMenuItem className="hover:font-bold">
                       <NavLink to="/admin/usersList">
-                        {language === "en" ? users : usersPL}
+                        {t("navigation.users")}
                       </NavLink>
                     </DropdownMenuItem>
                     <DropdownMenuItem className="hover:font-bold">
                       <NavLink to="/admin/reviewsList">
-                        {language === "en" ? reviews : reviewsPL}
+                        {t("navigation.reviews")}
                       </NavLink>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -166,12 +138,10 @@ const UserButton = () => {
                 variant="ghost"
                 onClick={() => {
                   dispatch(logout());
-                  toast.success(
-                    language === "en" ? message_signOut : message_signOutPL
-                  );
+                  toast.success(t("navigation.message_signOut"));
                 }}
               >
-                {language === "en" ? signOut : signOutPL}
+                {t("navigation.signOut")}
               </Button>
             </DropdownMenuItem>
           </DropdownMenuContent>

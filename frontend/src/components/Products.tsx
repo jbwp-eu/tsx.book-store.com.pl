@@ -1,6 +1,4 @@
-import dictionary, { type ObjectDict } from "@/dictionaries/dictionary";
-import { useAppSelector } from "@/store/hook";
-import type { RootState } from "@/store/store";
+import { useTranslation } from "react-i18next";
 import type { Product } from "@/types";
 import { useCallback, useContext, useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
@@ -47,9 +45,7 @@ const Products = ({
 
   const { pageNumber } = useParams();
 
-  const { language } = useAppSelector((state: RootState) => state.ui);
-
-  const { titlePL, title } = dictionary.home as ObjectDict;
+  const { t } = useTranslation();
 
   const sortItems = useCallback(
     (params: { [x: string]: string }) => {
@@ -143,7 +139,7 @@ const Products = ({
 
   return (
     <div>
-      <h1 className="h3-bold mb-6"> {language === "pl" ? titlePL : title}</h1>
+      <h1 className="h3-bold mb-6"> {t("home.title")}</h1>
       {/* <h2 className="bg-pink-500  xs:bg-red-500 sm:bg-green-500 md:bg-blue-500 lg:bg-amber-500 mb-2 xl:bg-black">
         Test
       </h2> */}

@@ -3,10 +3,7 @@ import ProductEditForm from "@/components/ProductEditForm";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import dictionary, { type ObjectDict } from "@/dictionaries/dictionary";
-import type { RootState } from "@/store/store";
 import type { MessageProps, Product } from "@/types";
-import { useSelector } from "react-redux";
 import {
   NavLink,
   redirect,
@@ -15,6 +12,7 @@ import {
   type LoaderFunction,
 } from "react-router-dom";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const loader =
   (language: string): LoaderFunction =>
@@ -34,11 +32,8 @@ const loader =
   };
 
 const ProductEditPage = () => {
+  const { t } = useTranslation();
   const data = useLoaderData<Product | MessageProps>();
-
-  const { language } = useSelector((state: RootState) => state.ui);
-
-  const { goBack, goBackPL } = dictionary.productEdit as ObjectDict;
 
   let content;
 
@@ -49,7 +44,7 @@ const ProductEditPage = () => {
       <div className="max-w-3xl mx-auto">
         <Button asChild variant="outline" className="mt-8">
           <NavLink to="/admin/productsList">
-            {language === "en" ? goBack : goBackPL}
+            {t("productEdit.goBack")}
           </NavLink>
         </Button>
         <Card className="mx-auto mt-8">

@@ -1,7 +1,4 @@
 import Message from "@/components/Message";
-import dictionary from "@/dictionaries/dictionary";
-import type { RootState } from "@/store/store";
-import { useSelector } from "react-redux";
 import {
   NavLink,
   useLoaderData,
@@ -9,7 +6,6 @@ import {
   type ActionFunctionArgs,
   type LoaderFunction,
 } from "react-router-dom";
-import { type ObjectDict } from "@/dictionaries/dictionary";
 import {
   Table,
   TableBody,
@@ -26,6 +22,7 @@ import DeleteDialog from "@/components/DeleteDialog";
 import type { MessageProps, Order } from "@/types";
 import Pagination from "@/components/Pagination";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const loader =
   (language: string): LoaderFunction =>
@@ -45,7 +42,6 @@ const loader =
     );
     if (!response.ok) {
       const resData = await response.json();
-      // throw new Error(resData.message);
       toast.error(resData.message);
       return resData;
     } else {
@@ -54,34 +50,12 @@ const loader =
   };
 
 const OrdersListPage = () => {
+  const { t } = useTranslation();
   const data = useLoaderData<
     { orders: Order[]; pages: number } | MessageProps
   >();
 
-  const { language } = useSelector((state: RootState) => state.ui);
-
   const submit = useSubmit();
-
-  const {
-    title,
-    titlePL,
-    id,
-    idPL,
-    name,
-    namePL,
-    date,
-    datePL,
-    total,
-    totalPL,
-    paid,
-    paidPL,
-    delivered,
-    deliveredPL,
-    actions,
-    actionsPL,
-    details,
-    detailsPL,
-  } = dictionary.ordersList as ObjectDict;
 
   const deleteOrderHandler = (id: string) => {
     submit(
@@ -100,36 +74,28 @@ const OrdersListPage = () => {
   } else {
     content = (
       <div>
-        <h2 className="h2-semibold py-4">
-          {language === "en" ? title : titlePL}
-        </h2>
+        <h2 className="h2-semibold py-4">{t("ordersList.title")}</h2>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead> {language === "en" ? id : idPL}</TableHead>
+              <TableHead>{t("ordersList.id")}</TableHead>
               <TableHead className="text-center">
-                {" "}
-                {language === "en" ? name : namePL}
+                {t("ordersList.name")}
               </TableHead>
               <TableHead className="text-center">
-                {" "}
-                {language === "en" ? date : datePL}
+                {t("ordersList.date")}
               </TableHead>
               <TableHead className="text-center">
-                {" "}
-                {language === "en" ? total : totalPL}
+                {t("ordersList.total")}
               </TableHead>
               <TableHead className="text-center">
-                {" "}
-                {language === "en" ? paid : paidPL}
+                {t("ordersList.paid")}
               </TableHead>
               <TableHead className="text-center">
-                {" "}
-                {language === "en" ? delivered : deliveredPL}
+                {t("ordersList.delivered")}
               </TableHead>
               <TableHead className="text-right">
-                {" "}
-                {language === "en" ? actions : actionsPL}
+                {t("ordersList.actions")}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -169,15 +135,9 @@ const OrdersListPage = () => {
                 <TableCell className="text-right space-x-4">
                   <Button asChild variant="outline">
                     <NavLink to={`/order/${order.id}`}>
-                      {language === "en" ? details : detailsPL}
+                      {t("ordersList.details")}
                     </NavLink>
                   </Button>
-                  {/* <Button
-                    variant="destructive"
-                    onClick={() => deleteOrderHandler(order.id)}
-                  >
-                    {language === "en" ? delete_text : delete_textPL}
-                  </Button> */}
                   <DeleteDialog onDelete={() => deleteOrderHandler(order.id)} />
                 </TableCell>
               </TableRow>
@@ -200,7 +160,7 @@ const action =
     const token = localStorage.getItem("token");
 
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/orders/${id}?language=${language}}`,
+      `${import.meta.env.VITE_BACKEND_URL}/orders/${id}?language=${language}`,
       {
         method,
         headers: {
@@ -211,7 +171,6 @@ const action =
     );
     if (!response.ok) {
       const resData = await response.json();
-      // throw new Error(resData.message);
       toast.error(resData.message);
     } else {
       const resData = await response.json();

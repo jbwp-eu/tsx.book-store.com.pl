@@ -1,11 +1,13 @@
 import { PL, GB } from "country-flag-icons/react/3x2";
 import { useDispatch } from "react-redux";
 import { setLanguage } from "@/store/uiSlice";
+import i18n from "@/i18n/i18n";
 
 const LanguageToggle = () => {
   const dispatch = useDispatch();
-  const setLanguageHandler = (props: string) => {
-    dispatch(setLanguage(props));
+  const setLanguageHandler = (locale: string) => {
+    dispatch(setLanguage(locale));
+    void i18n.changeLanguage(locale === "pl" ? "pl" : "en");
   };
 
   return (

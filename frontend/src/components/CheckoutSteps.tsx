@@ -1,19 +1,16 @@
-import dictionary from "@/dictionaries/dictionary";
-import { useAppSelector } from "@/store/hook.ts";
-import { type RootState } from "@/store/store.ts";
-import { type ArrayDict } from "@/dictionaries/dictionary";
-import React from "react";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
+import React from "react";
+import { useTranslation } from "react-i18next";
+
+type Step = { link: string; text: string };
 
 const CheckoutSteps = ({ current = 0 }) => {
-  // const { checkout_steps, checkout_stepsPL } = dictionary as {
-  //   [key: string]: ArrayDict;
-  // };
+  const { t } = useTranslation();
 
-  const { checkoutSteps } = dictionary as { [key: string]: ArrayDict };
-
-  const { language } = useAppSelector((state: RootState) => state.ui);
+  const checkoutSteps = t("checkoutSteps", {
+    returnObjects: true,
+  }) as Step[];
 
   return (
     <div className="flex flex-col md:flex-row justify-between items-center space-x-2 space-y-2 mb-10">
@@ -27,9 +24,9 @@ const CheckoutSteps = ({ current = 0 }) => {
               index > current ? "pointer-events-none cursor-context-menu" : ""
             )}
           >
-            {language === "en" ? step.text : step.textPL}
+            {step.text}
           </Link>
-          {step.text !== "Place Order" && "Zamówienie" && (
+          {index < checkoutSteps.length - 1 && (
             <hr className="w-16 border-t border-gray-300 mx-2" />
           )}
         </React.Fragment>

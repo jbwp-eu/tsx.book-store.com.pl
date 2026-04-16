@@ -3,10 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import UserEditForm from "@/components/UserEditForm";
 // import UserEditForm_old from "@/components/UserEditForm_old";
-import dictionary, { type ObjectDict } from "@/dictionaries/dictionary";
-import type { RootState } from "@/store/store";
 import type { MessageProps, User } from "@/types";
-import { useSelector } from "react-redux";
 import {
   NavLink,
   redirect,
@@ -15,6 +12,7 @@ import {
   type LoaderFunction,
 } from "react-router-dom";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const loader =
   (language: string): LoaderFunction =>
@@ -40,10 +38,8 @@ const loader =
   };
 
 const UserEditPage = () => {
-  const { language } = useSelector((state: RootState) => state.ui);
+  const { t } = useTranslation();
   const data = useLoaderData<User | MessageProps>();
-
-  const { goBack, goBackPL } = dictionary.userEdit as ObjectDict;
 
   let content;
 
@@ -54,7 +50,7 @@ const UserEditPage = () => {
       <div>
         <Button asChild variant="outline">
           <NavLink to="/admin/usersList">
-            {language === "en" ? goBack : goBackPL}
+            {t("userEdit.goBack")}
           </NavLink>
         </Button>
         <Card className="max-w-lg mx-auto mt-16">
