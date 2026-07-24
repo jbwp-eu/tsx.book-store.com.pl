@@ -9,9 +9,14 @@ import Message from "./models/message.js";
 
 const importData = async (): Promise<void> => {
   try {
-    await Product.bulkCreate(products as unknown as ProductCreationAttributes[], { validate: true });
+    await Product.bulkCreate(
+      products as unknown as ProductCreationAttributes[],
+      { validate: true },
+    );
     console.log("Product data imported".blue.inverse);
-    await User.bulkCreate(users as unknown as UserCreationAttributes[], { validate: true });
+    await User.bulkCreate(users as unknown as UserCreationAttributes[], {
+      validate: true,
+    });
     console.log("User data imported".blue.inverse);
   } catch (error) {
     console.log(error);
