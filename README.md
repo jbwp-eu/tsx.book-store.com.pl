@@ -1,5 +1,7 @@
 # tsx.book-store.com.pl
 
+**Język:** Polski | [English](README.en.md)
+
 Sklep internetowy z książkami: katalog, koszyk, checkout, płatności Stripe oraz panel admina. Monorepo z REST API (Express + TypeScript) i SPA React.
 
 **Live Demo:** https://tsx.book-store.com.pl/
