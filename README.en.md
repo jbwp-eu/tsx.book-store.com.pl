@@ -2,7 +2,7 @@
 
 **Language:** [Polski](README.md) | English
 
-Online bookstore: catalog, cart, checkout, Stripe payments, and an admin panel. Monorepo with a REST API (Express + TypeScript) and a React SPA.
+A full-stack online bookstore monorepo: **React 19** + **Vite** SPA with **Tailwind CSS v4**, **shadcn/ui**, **Redux Toolkit**, and **React Router v7** (data mode); **Express** REST API with **Sequelize**, **MySQL**, and **JWT**. Payments via **Stripe**; product images on **AWS S3** + **CloudFront**. End-to-end tests with **Cypress**. Live at `tsx.book-store.com.pl`.
 
 **Live Demo:** https://tsx.book-store.com.pl/
 

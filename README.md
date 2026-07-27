@@ -1,10 +1,10 @@
-# tsx.book-store.com.pl
+# [tsx.book-store.com.pl](http://tsx.book-store.com.pl)
 
 **Język:** Polski | [English](README.en.md)
 
-Sklep internetowy z książkami: katalog, koszyk, checkout, płatności Stripe oraz panel admina. Monorepo z REST API (Express + TypeScript) i SPA React.
+Full-stackowy sklep z książkami (monorepo): SPA **React 19** + **Vite** z **Tailwind CSS v4**, **shadcn/ui**, **Redux Toolkit** i **React Router v7** (data mode); REST API **Express** z **Sequelize**, **MySQL** i **JWT**. Płatności: **Stripe**; zdjęcia produktów: **AWS S3** + **CloudFront**. Testy e2e: **Cypress**.
 
-**Live Demo:** https://tsx.book-store.com.pl/
+**Live Demo:** [https://tsx.book-store.com.pl/](https://tsx.book-store.com.pl/)
 
 ## Co robi aplikacja
 
@@ -19,12 +19,12 @@ Sklep internetowy z książkami: katalog, koszyk, checkout, płatności Stripe o
 
 ## Stack
 
-| Warstwa | Technologie |
-|--------|-------------|
-| **Backend** | Node.js, Express 5, TypeScript (`tsx`), Sequelize, MySQL, JWT, Stripe, Multer, Nodemailer, AWS S3 / CloudFront |
+| Warstwa      | Technologie                                                                                                                   |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Backend**  | Node.js, Express 5, TypeScript (`tsx`), Sequelize, MySQL, JWT, Stripe, Multer, Nodemailer, AWS S3 / CloudFront                |
 | **Frontend** | React 19, Vite, TypeScript, React Router, Redux Toolkit, Tailwind CSS 4, Radix UI, Formik + Yup, i18next, Stripe.js, Recharts |
-| **Dane** | MySQL (Sequelize), uploady lokalne (`uploads/`) lub S3 |
-| **Testy** | Cypress (e2e) |
+| **Dane**     | MySQL (Sequelize), uploady lokalne (`uploads/`) lub S3                                                                        |
+| **Testy**    | Cypress (e2e)                                                                                                                 |
 
 ## Struktura repo
 
@@ -65,12 +65,12 @@ npm run dev
 
 Inne skrypty:
 
-| Komenda | Opis |
-|---------|------|
-| `npm run server` | backend z hot-reload (`tsx watch`) |
-| `npm run client` | sam frontend (Vite) |
-| `npm run build:backend` | kompilacja TypeScript backendu |
+| Komenda                           | Opis                                                |
+| --------------------------------- | --------------------------------------------------- |
+| `npm run server`                  | backend z hot-reload (`tsx watch`)                  |
+| `npm run client`                  | sam frontend (Vite)                                 |
+| `npm run build:backend`           | kompilacja TypeScript backendu                      |
 | `npm run start` / `start:backend` | produkcyjny start API (serwuje też `frontend/dist`) |
-| `npm run seed` | import danych demo |
-| `npm run seed:destroy` | usunięcie danych seed |
-| `npm test` | Cypress headless (`frontend`) |
+| `npm run seed`                    | import danych demo                                  |
+| `npm run seed:destroy`            | usunięcie danych seed                               |
+| `npm test`                        | Cypress headless (`frontend`)                       |
