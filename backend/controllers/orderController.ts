@@ -6,6 +6,7 @@ import OrderItem from "../models/orderItem.js";
 import sequelize from "../config/db.js";
 import User from "../models/user.js";
 import type { ShippingAddress } from "../types/index.js";
+import { clientIp } from "../utils/clientIp.js";
 
 interface OrderItemFromClient {
   id: string;
@@ -76,6 +77,7 @@ export const addOrderItems = async (
       shippingPrice,
       taxPrice,
       totalPrice,
+      clientIp: clientIp(req),
       OrderItems: dbOrderItems,
     };
 

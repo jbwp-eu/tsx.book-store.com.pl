@@ -12,13 +12,14 @@ import { Link, useLoaderData, type LoaderFunction } from "react-router-dom";
 import { toast } from "sonner";
 import Message from "./Message";
 import Image from "./Image";
+import { env } from "@/lib/env";
 
 const loader =
   (language: string): LoaderFunction =>
   async (): Promise<{ products: Product[] } | Response> => {
     const response = await fetch(
       `${
-        import.meta.env.VITE_BACKEND_URL
+        env.backendUrl
       }/products/featured?language=${language}`
     );
 

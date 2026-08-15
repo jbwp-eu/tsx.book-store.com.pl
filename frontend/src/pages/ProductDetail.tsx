@@ -21,12 +21,13 @@ import { type MessageProps, type Product } from "@/types";
 import { formatCurrency } from "@/utils/formatUtils";
 import ProductImages from "../components/ProductImages";
 import { useTranslation } from "react-i18next";
+import { env } from "@/lib/env";
 
 const loader =
   (language: string): LoaderFunction =>
   async ({ params }): Promise<{ product: Product } | Response> => {
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/products/${
+      `${env.backendUrl}/products/${
         params.id
       }?language=${language}`
     );
@@ -203,7 +204,7 @@ const action =
 
     const response = await fetch(
       `${
-        import.meta.env.VITE_BACKEND_URL
+        env.backendUrl
       }/products/${id}/reviews?language=${language}`,
       {
         method,

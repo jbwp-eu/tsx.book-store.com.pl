@@ -1,5 +1,6 @@
 import multer from "multer";
 
+// Keep uploads in memory (file.buffer) so they can be streamed to Cloud Storage without a temp disk file.
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 

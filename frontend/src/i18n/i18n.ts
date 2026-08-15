@@ -2,11 +2,12 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import dictionary from "@/dictionaries/dictionary";
 import { dictionaryToI18nResources } from "./buildResources";
+import { env } from "@/lib/env";
 
 const resources = dictionaryToI18nResources(dictionary);
 
 const defaultLng =
-  import.meta.env.VITE_LANGUAGE === "pl" ? "pl" : "en";
+  env.language === "pl" ? "pl" : "en";
 
 void i18n.use(initReactI18next).init({
   resources: {

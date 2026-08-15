@@ -67,6 +67,29 @@ const dictionary: Dictionary = {
     demoNoticePL:
       "Aplikacja demonstracyjna — to nie jest prawdziwy sklep. Zamówienia nie są realizowane; witryna służy wyłącznie do testów.",
   },
+  storeMap: {
+    title: "How to get to our store",
+    titlePL: "Jak dojechać do sklepu",
+    comingSoon: "Physical store coming soon.",
+    comingSoonPL: "Sklep stacjonarny wkrótce.",
+    unavailable:
+      "Store location is not available at the moment. Please try again later.",
+    unavailablePL:
+      "Lokalizacja sklepu jest obecnie niedostępna. Spróbuj ponownie później.",
+    hint: "Use the map above to preview our future store location and plan your route.",
+    hintPL:
+      "Użyj mapy powyżej, aby zobaczyć przyszłą lokalizację sklepu i zaplanować dojazd.",
+    close: "Close",
+    closePL: "Zamknij",
+    markerLabel: "Store",
+    markerLabelPL: "Sklep",
+    infoWindow: "Physical store location coming soon.",
+    infoWindowPL: "Lokalizacja sklepu stacjonarnego wkrótce.",
+    apiKeyMissing:
+      "Map is unavailable. Please configure VITE_GOOGLE_MAPS_API_KEY.",
+    apiKeyMissingPL:
+      "Mapa jest niedostępna. Skonfiguruj VITE_GOOGLE_MAPS_API_KEY.",
+  },
   message: {
     button: "Back to the home page",
     buttonPL: "Powrót do strony startowej",

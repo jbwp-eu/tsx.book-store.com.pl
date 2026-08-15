@@ -1,12 +1,15 @@
 import { Request, Response, NextFunction } from "express";
-import fs from "fs";
 import { Op } from "sequelize";
-import { getSignedUrl } from "@aws-sdk/cloudfront-signer";
 import Product from "../models/product.js";
 import ProductReview from "../models/productReview.js";
 import type { ProductInstance } from "../models/product.js";
 import type { ProductReviewInstance } from "../models/productReview.js";
-import { uploadFile, deleteFile } from "../config/aws-s3.js";
+import {
+  uploadFile,
+  deleteFile,
+  resolveObjectUrl,
+  isGcsObjectKey,
+} from "../config/gcs.js";
 
 type ProductWithReviews = ProductInstance & {
   ProductReviews: ProductReviewInstance[];
@@ -14,6 +17,14 @@ type ProductWithReviews = ProductInstance & {
 
 function asStringArray(value: string[] | Record<string, unknown>): string[] {
   return Array.isArray(value) ? value : [];
+}
+
+async function signGcsKeysInPlace(keys: string[]): Promise<void> {
+  for (let i = 0; i < keys.length; i++) {
+    if (isGcsObjectKey(keys[i])) {
+      keys[i] = await resolveObjectUrl(keys[i]);
+    }
+  }
 }
 
 export const createProduct = async (
@@ -216,30 +227,17 @@ export const getProducts = async (
       );
     }
 
-    const cloudFrontKeyPairId = process.env.CLOUDFRONT_KEY_PAIR_ID;
-    const cloudFrontPrivateKey = process.env.CLOUDFRONT_PRIVATE_KEY;
-
     for (const row of rows) {
       const images = asStringArray(row.images);
-      if (images.length !== 0) {
-        for (let i = 0; i < images.length; i++) {
-          if (images[i].slice(0, 3) === "aws" && cloudFrontKeyPairId && cloudFrontPrivateKey) {
-            (row.images as string[])[i] = getSignedUrl({
-              url: "https://d8gge2z531r61.cloudfront.net/" + images[i],
-              keyPairId: cloudFrontKeyPairId,
-              dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-              privateKey: cloudFrontPrivateKey,
-            });
-          }
-        }
+      if (images.length > 0) {
+        await signGcsKeysInPlace(images);
+        row.images = images;
       }
     }
 
-    setTimeout(() => {
-      res
-        .status(200)
-        .json({ products: rows, pages: Math.ceil(count / pageSize) });
-    }, 0);
+    res
+      .status(200)
+      .json({ products: rows, pages: Math.ceil(count / pageSize) });
   } catch (err) {
     next(err);
   }
@@ -268,25 +266,13 @@ export const getProductById = async (
       );
     }
 
-    const cloudFrontKeyPairId = process.env.CLOUDFRONT_KEY_PAIR_ID;
-    const cloudFrontPrivateKey = process.env.CLOUDFRONT_PRIVATE_KEY;
     const images = asStringArray(product.images);
-    if (images.length !== 0 && cloudFrontKeyPairId && cloudFrontPrivateKey) {
-      for (let i = 0; i < images.length; i++) {
-        if (images[i].slice(0, 3) === "aws") {
-          (product.images as string[])[i] = getSignedUrl({
-            url: "https://d8gge2z531r61.cloudfront.net/" + images[i],
-            keyPairId: cloudFrontKeyPairId,
-            dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-            privateKey: cloudFrontPrivateKey,
-          });
-        }
-      }
+    if (images.length > 0) {
+      await signGcsKeysInPlace(images);
+      product.images = images;
     }
 
-    setTimeout(() => {
-      res.status(200).json(product);
-    }, 0);
+    res.status(200).json(product);
   } catch (err) {
     next(err);
   }
@@ -311,17 +297,11 @@ export const getFeaturedProducts = async (
       );
     }
 
-    const cloudFrontKeyPairId = process.env.CLOUDFRONT_KEY_PAIR_ID;
-    const cloudFrontPrivateKey = process.env.CLOUDFRONT_PRIVATE_KEY;
     for (const product of products) {
       const banners = asStringArray(product.banners);
-      if (banners.length !== 0 && banners[0].slice(0, 3) === "aws" && cloudFrontKeyPairId && cloudFrontPrivateKey) {
-        (product.banners as string[])[0] = getSignedUrl({
-          url: "https://d8gge2z531r61.cloudfront.net/" + banners[0],
-          keyPairId: cloudFrontKeyPairId,
-          dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-          privateKey: cloudFrontPrivateKey,
-        });
+      if (banners.length > 0) {
+        await signGcsKeysInPlace(banners);
+        product.banners = banners;
       }
     }
 
@@ -373,39 +353,11 @@ export const updateProduct = async (
 
     const files = req.files as { images?: Express.Multer.File[]; banners?: Express.Multer.File[] } | undefined;
 
-    if (files?.images) {
-      for (const image of productImages) {
-        if (image.slice(0, 7) === "uploads") {
-          fs.unlink(`uploads/${image.slice(8)}`, (err) => {
-            if (err) {
-              console.log(
-                `An image ${product.title} did not exist in an uploads directory`
-              );
-            }
-          });
-        }
-      }
-    }
-
-    if (files?.banners) {
-      for (const image of productBanners) {
-        if (image.slice(0, 7) === "uploads") {
-          fs.unlink(`uploads/${image.slice(8)}`, (err) => {
-            if (err) {
-              console.log(
-                `A banner ${product.title} did not exist in an uploads directory`
-              );
-            }
-          });
-        }
-      }
-    }
-
     let images: string[] | undefined;
     if (files?.images && files.images.length !== 0) {
       try {
         for (let i = 0; i < productImages.length; i++) {
-          if (productImages[i].startsWith("aws")) {
+          if (isGcsObjectKey(productImages[i])) {
             await deleteFile(productImages[i]);
           }
         }
@@ -420,7 +372,7 @@ export const updateProduct = async (
     let banners: string[] | undefined;
     if (files?.banners && files.banners.length !== 0) {
       try {
-        if (productBanners[0]?.slice(0, 3) === "aws") {
+        if (productBanners[0] && isGcsObjectKey(productBanners[0])) {
           await deleteFile(productBanners[0]);
         }
         banners =
@@ -480,30 +432,14 @@ export const deleteProduct = async (
 
     if (productImages.length !== 0) {
       for (let i = 0; i < productImages.length; i++) {
-        if (productImages[i].slice(0, 7) === "uploads") {
-          fs.unlink(`uploads/${productImages[i].slice(8)}`, (err) => {
-            if (err) {
-              console.log(
-                `An image ${product.title} did not exist in an uploads directory`
-              );
-            }
-          });
-        } else if (productImages[i].slice(0, 3) === "aws") {
+        if (isGcsObjectKey(productImages[i])) {
           await deleteFile(productImages[i]);
         }
       }
     }
 
     if (productBanners.length !== 0) {
-      if (productBanners[0].slice(0, 7) === "uploads") {
-        fs.unlink(`uploads/${productBanners[0].slice(8)}`, (err) => {
-          if (err) {
-            console.log(
-              `An image ${product.title} did not exist in an uploads directory`
-            );
-          }
-        });
-      } else if (productBanners[0].slice(0, 3) === "aws") {
+      if (isGcsObjectKey(productBanners[0])) {
         await deleteFile(productBanners[0]);
       }
     }

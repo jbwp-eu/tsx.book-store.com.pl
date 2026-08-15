@@ -9,6 +9,7 @@ import {
   updateUserProfile,
 } from "../controllers/userController.js";
 import { admin, protect } from "../middleware/authMiddleware.js";
+import { loginLimiter, registerLimiter } from "../middleware/rateLimiters.js";
 
 const router = express.Router();
 
@@ -16,8 +17,8 @@ router.get("/", protect, admin, getUsers);
 
 router.get("/:id", protect, admin, getUserById);
 
-router.post("/register", registerUser);
-router.post("/login", authUser);
+router.post("/register", registerLimiter, registerUser);
+router.post("/login", loginLimiter, authUser);
 
 router.put("/profile", protect, updateUserProfile);
 router.put("/:id", protect, admin, updateUser);

@@ -5,10 +5,11 @@ export interface MessageAttributes {
   id: string;
   email: string;
   text: string;
+  clientIp?: string | null;
 }
 
 export interface MessageCreationAttributes
-  extends Optional<MessageAttributes, "id"> {}
+  extends Optional<MessageAttributes, "id" | "clientIp"> {}
 
 export interface MessageInstance
   extends Model<MessageAttributes, MessageCreationAttributes>,
@@ -39,6 +40,10 @@ const Message = sequelize.define<MessageInstance>(
         notEmpty: { msg: "Please enter text" },
         notNull: { msg: "Please enter text" },
       },
+    },
+    clientIp: {
+      type: DataTypes.STRING(45),
+      allowNull: true,
     },
   },
   {

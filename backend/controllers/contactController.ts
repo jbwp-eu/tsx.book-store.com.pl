@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import nodemailer from "nodemailer";
 import Message from "../models/message.js";
+import { clientIp } from "../utils/clientIp.js";
 
 export const createMessage = async (
   req: Request,
@@ -24,7 +25,11 @@ export const createMessage = async (
   const to = `<${to_1}>,<${to_2}>`;
 
   try {
-    const createdMessage = await Message.create({ email, text });
+    const createdMessage = await Message.create({
+      email,
+      text,
+      clientIp: clientIp(req),
+    });
     if (createdMessage === null) {
       res.status(400);
       throw new Error(
@@ -35,7 +40,7 @@ export const createMessage = async (
     }
     const subject = `Od (email): ${createdMessage.email}`;
 
-    const textMessage = `Wiadomość: ${createdMessage.text}`;
+    const textMessage = `Wiadomość: ${createdMessage.text}\nIP: ${createdMessage.clientIp ?? "n/a"}`;
 
     const transporter = nodemailer.createTransport({
       host: host,

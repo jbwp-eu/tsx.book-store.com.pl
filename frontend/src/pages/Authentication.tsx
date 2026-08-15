@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { type AppDispatch } from "../store/store.ts";
 import { setCredentials } from "@/store/authSlice.ts";
 import { Card, CardContent } from "@/components/ui/card.tsx";
+import { env } from "@/lib/env";
 
 const AuthenticationPage = () => {
   return (
@@ -39,7 +40,7 @@ const action =
     }
 
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/users${mode}?language=${language}`,
+      `${env.backendUrl}/users${mode}?language=${language}`,
       {
         method,
         headers: {

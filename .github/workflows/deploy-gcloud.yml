@@ -1,0 +1,91 @@
+# Deploy Google Compute Engine — tsx.book-store.website
+# Secrets: GCLOUD_HOST, GCLOUD_SSH_KEY, VITE_STRIPE_PUBLISHABLE_KEY_TEST_MODE_GOOGLE
+# Variables: DEPLOY_BASE_URL_GCLOUD (https://tsx.book-store.website), GCLOUD_USER (optional)
+name: Deploy to Google Cloud
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-gcloud
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    env:
+      DEPLOY_USER: ${{ vars.GCLOUD_USER || 'ubuntu' }}
+      GCLOUD_SSH_PORT: ${{ vars.GCLOUD_SSH_PORT || '22' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install and build
+        env:
+          VITE_DEPLOY_TARGET: google
+          VITE_BACKEND_URL: ${{ vars.DEPLOY_BASE_URL_GCLOUD || 'https://tsx.book-store.website' }}/api
+          VITE_BACKEND_URL_GOOGLE: ${{ vars.DEPLOY_BASE_URL_GCLOUD || 'https://tsx.book-store.website' }}/api
+          VITE_ASSET_URL: ${{ vars.DEPLOY_BASE_URL_GCLOUD || 'https://tsx.book-store.website' }}
+          VITE_APP_NAME: BookStore
+          VITE_LANGUAGE: pl
+          VITE_CURRENCY: pln
+          VITE_TAX: "0"
+          VITE_STRIPE_PUBLISHABLE_KEY_TEST_MODE_GOOGLE: ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY_TEST_MODE_GOOGLE }}
+          VITE_STRIPE_CONFIRMPAYMENT_URL_GOOGLE: ${{ vars.DEPLOY_BASE_URL_GCLOUD || 'https://tsx.book-store.website' }}
+        run: |
+          npm ci
+          npm ci --prefix frontend
+          npm run build
+
+      - name: Prepare release archive
+        run: |
+          RELEASE_DIR="release-${{ github.sha }}"
+          mkdir -p "$RELEASE_DIR"
+          rsync -a \
+            --exclude node_modules \
+            --exclude .git \
+            --exclude cypress \
+            --exclude 'frontend/node_modules' \
+            --exclude 'frontend/cypress' \
+            --exclude '.env' \
+            --exclude '.env.local' \
+            --exclude '.env.production' \
+            --exclude 'frontend/.env.local' \
+            ./ "$RELEASE_DIR/"
+          echo "RELEASE_DIR=$RELEASE_DIR" >> "$GITHUB_ENV"
+
+      - name: Rsync to Compute Engine
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avzr --delete
+          path: ${{ env.RELEASE_DIR }}/
+          remote_path: /var/www/tsx-book-store/releases/${{ github.sha }}/
+          remote_host: ${{ secrets.GCLOUD_HOST }}
+          remote_port: ${{ env.GCLOUD_SSH_PORT }}
+          remote_user: ${{ env.DEPLOY_USER }}
+          remote_key: ${{ secrets.GCLOUD_SSH_KEY }}
+
+      - name: Activate release and restart
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.GCLOUD_HOST }}
+          port: ${{ env.GCLOUD_SSH_PORT }}
+          username: ${{ env.DEPLOY_USER }}
+          key: ${{ secrets.GCLOUD_SSH_KEY }}
+          script: |
+            if command -v activate-release-gcloud.sh >/dev/null 2>&1; then
+              activate-release-gcloud.sh ${{ github.sha }}
+            else
+              bash /var/www/tsx-book-store/releases/${{ github.sha }}/deploy-ovh/activate-release.sh ${{ github.sha }}
+            fi
+
+      - name: Smoke test (public URL)
+        if: vars.DEPLOY_BASE_URL_GCLOUD != ''
+        env:
+          DEPLOY_BASE_URL_OVH: ${{ vars.DEPLOY_BASE_URL_GCLOUD }}
+        run: bash deploy-ovh/smoke-test.sh

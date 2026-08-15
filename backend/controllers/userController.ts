@@ -3,6 +3,7 @@ import Order from "../models/order.js";
 import ProductReview from "../models/productReview.js";
 import User from "../models/user.js";
 import { createJSONToken } from "../utils/token.js";
+import { clientIp } from "../utils/clientIp.js";
 
 export const registerUser = async (
   req: Request,
@@ -16,6 +17,7 @@ export const registerUser = async (
     const userExists = await User.findOne({ where: { email } });
 
     if (userExists) {
+      console.warn(`[auth] register failed (exists) ip=${clientIp(req)} email=${email}`);
       res.status(400);
       throw new Error(
         language === "en"
@@ -36,6 +38,7 @@ export const registerUser = async (
 
     const token = createJSONToken(user.id);
 
+    console.log(`[auth] register ok ip=${clientIp(req)} email=${user.email}`);
     res.status(201).json({
       message:
         language === "en"
@@ -62,6 +65,7 @@ export const authUser = async (
   try {
     const user = await User.findOne({ where: { email } });
     if (!user) {
+      console.warn(`[auth] login failed ip=${clientIp(req)} email=${email}`);
       res.status(401);
       throw new Error(
         language === "en"
@@ -76,6 +80,7 @@ export const authUser = async (
     if (user && (await UserModel.matchPassword(password, user.password))) {
       const token = createJSONToken(user.id);
 
+      console.log(`[auth] login ok ip=${clientIp(req)} email=${user.email}`);
       res.status(200).json({
         message:
           language === "en" ? "You are logged in !" : "Jesteś zalogowany !",
@@ -85,6 +90,7 @@ export const authUser = async (
         token,
       });
     } else {
+      console.warn(`[auth] login failed ip=${clientIp(req)} email=${email}`);
       res.status(401);
       throw new Error(
         language === "en"

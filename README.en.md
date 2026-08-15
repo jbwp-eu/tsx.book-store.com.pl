@@ -2,9 +2,10 @@
 
 **Language:** [Polski](README.md) | English
 
-A full-stack online bookstore monorepo: **React 19** + **Vite** SPA with **Tailwind CSS v4**, **shadcn/ui**, **Redux Toolkit**, and **React Router v7** (data mode); **Express** REST API with **Sequelize**, **MySQL**, and **JWT**. Payments via **Stripe**; product images on **AWS S3** + **CloudFront**. End-to-end tests with **Cypress**. Live at `tsx.book-store.com.pl`.
+A full-stack online bookstore monorepo: **React 19** + **Vite** SPA with **Tailwind CSS v4**, **shadcn/ui**, **Redux Toolkit**, and **React Router v7**; **Express** REST API with **Sequelize**, **MySQL**, and **JWT**. Payments via **Stripe**; product images on **Google Cloud Storage**. End-to-end tests with **Cypress**.
 
-**Live Demo:** https://tsx.book-store.com.pl/
+**Live (OVH):** https://tsx.book-store.com.pl/  
+**Live (Google Cloud):** https://tsx.book-store.website/
 
 ## What the app does
 
@@ -15,62 +16,67 @@ A full-stack online bookstore monorepo: **React 19** + **Vite** SPA with **Tailw
 - **Admin** — overview (sales), products, users, orders, reviews
 - **i18n** — PL / EN, light/dark theme, store locator map
 - **Contact** — form with email delivery (SMTP)
-- **Media** — product image uploads (AWS S3 + CloudFront)
+- **Media** — product image uploads to **Cloud Storage** (GCS)
 
 ## Stack
 
 | Layer | Technologies |
 |--------|-------------|
-| **Backend** | Node.js, Express 5, TypeScript (`tsx`), Sequelize, MySQL, JWT, Stripe, Multer, Nodemailer, AWS S3 / CloudFront |
-| **Frontend** | React 19, Vite, TypeScript, React Router, Redux Toolkit, Tailwind CSS 4, Radix UI, Formik + Yup, i18next, Stripe.js, Recharts |
-| **Data** | MySQL (Sequelize), local uploads (`uploads/`) or S3 |
+| **Backend** | Node.js, Express 5, TypeScript (`tsx`), Sequelize, MySQL, JWT, Stripe, Multer, Nodemailer, **@google-cloud/storage**, **@google-cloud/pubsub** |
+| **Frontend** | React 19, Vite, TypeScript, React Router, Redux Toolkit, Tailwind CSS 4, shadcn/ui, Formik + Yup, i18next, Stripe.js, Recharts |
+| **Data** | MySQL (local on VPS / Compute Engine), images on **GCS** |
+| **Deploy** | OVH VPS + Caddy; Google Cloud (VPC, Compute Engine, GCS, Cloud Function) — no LB / Autoscaling |
 | **Tests** | Cypress (e2e) |
 
 ## Repo structure
 
 ```
-backend/          # Express REST API + Sequelize
-frontend/         # React SPA (Vite)
-uploads/          # local images (dev / fallback)
+backend/                 # Express REST API + Sequelize
+frontend/                # React SPA (Vite)
+deploy-ovh/              # OVH bootstrap + Caddy / systemd
+deploy-gcloud/           # GCP Console guide
+cloud-functions/         # order-confirmation Cloud Function (Google only)
+.github/workflows/       # deploy-ovh.yml, deploy-gcloud.yml
 ```
-
-**Backend** — REST API (`/api/...`), database, JWT auth, Stripe payments, webhook, uploads, email.  
-**Frontend** — UI, routing, state (Redux), REST calls.
 
 ## Local setup
 
-Requirements: Node.js 18+, a running MySQL database.
+Requirements: Node.js 18+, MySQL.
 
 ```bash
 npm install
 npm install --prefix frontend
+cp .env.example .env
+cp frontend/.env.example frontend/.env.local
 ```
 
-Configure variables in the root `.env` (e.g. `PORT`, `DB_*`, `JWT_SECRET`, Stripe keys, SMTP, optionally AWS/CloudFront). In development the frontend talks to the API via `VITE_BACKEND_URL` (loaded from the root `.env`).
-
-Optionally seed the database with demo data:
+Fill in `.env` (`DEPLOY_TARGET`, Stripe `*_OVH` / `*_GOOGLE`, SMTP, optional GCS) and `frontend/.env.local`.
 
 ```bash
-npm run seed
-```
-
-Run in development mode (backend + frontend together):
-
-```bash
+npm run seed   # optional
 npm run dev
 ```
 
-- Frontend: Vite (default `http://localhost:5173`, port from `VITE_PORT`)
-- Backend: REST API on the port from `PORT`
-
-Other scripts:
-
 | Command | Description |
-|---------|-------------|
-| `npm run server` | backend with hot-reload (`tsx watch`) |
-| `npm run client` | frontend only (Vite) |
-| `npm run build:backend` | compile backend TypeScript |
-| `npm run start` / `start:backend` | production API start (also serves `frontend/dist`) |
-| `npm run seed` | import demo data |
-| `npm run seed:destroy` | remove seed data |
-| `npm test` | Cypress headless (`frontend`) |
+| ------- | ----------- |
+| `npm run server` | backend (`tsx watch`) |
+| `npm run client` | frontend (Vite) |
+| `npm run build` | backend + frontend (production) |
+| `npm run start` | `node backend/dist/server.js` (also serves `frontend/dist`) |
+| `npm test` | Cypress |
+
+## Deploy
+
+| Environment | Domain | Docs |
+| ---------- | ------ | ---- |
+| **OVH** | `tsx.book-store.com.pl` | [deploy-ovh/README.md](deploy-ovh/README.md) |
+| **Google Cloud** | `tsx.book-store.website` | [deploy-gcloud/README.md](deploy-gcloud/README.md) |
+
+- **Images:** shared **Cloud Storage** bucket (OVH and GCP).
+- **Order email:** OVH — SMTP inside Node; Google — **Pub/Sub → Cloud Function**.
+- **Stripe:** `DEPLOY_TARGET` / `VITE_DEPLOY_TARGET` = `ovh` \| `google` and `*_TEST_MODE_OVH` / `*_TEST_MODE_GOOGLE` pairs.
+
+Stripe webhooks:
+
+- OVH: `https://tsx.book-store.com.pl/api/webhooks/stripe`
+- Google: `https://tsx.book-store.website/api/webhooks/stripe`

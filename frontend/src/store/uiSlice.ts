@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { env } from "@/lib/env";
 
 type UiState = {
   language: string;
@@ -6,7 +7,7 @@ type UiState = {
 };
 
 const initialState: UiState = {
-  language: import.meta.env.VITE_LANGUAGE,
+  language: env.language,
   // isFilter: false,
 };
 

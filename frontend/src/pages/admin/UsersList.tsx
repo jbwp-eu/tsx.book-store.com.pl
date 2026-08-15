@@ -20,12 +20,13 @@ import {
 } from "react-router-dom";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { env } from "@/lib/env";
 
 const loader = (language: string) => async () => {
   const token = localStorage.getItem("token");
 
   const response = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/users?language=${language}`,
+    `${env.backendUrl}/users?language=${language}`,
     {
       headers: {
         authorization: "Bearer " + token,
@@ -121,7 +122,7 @@ const action =
     const token = localStorage.getItem("token");
 
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/users/${id}?language=${language}`,
+      `${env.backendUrl}/users/${id}?language=${language}`,
       {
         method,
         headers: {

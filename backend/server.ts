@@ -20,6 +20,10 @@ import ProductReview from "./models/productReview.js";
 import Order from "./models/order.js";
 import OrderItem from "./models/orderItem.js";
 import Message from "./models/message.js";
+import { stripeSecretKey } from "./utils/stripeEnv.js";
+import { ensureClientIpColumns } from "./utils/ensureClientIpColumns.js";
+import { paymentLimiter } from "./middleware/rateLimiters.js";
+import { clientIp } from "./utils/clientIp.js";
 
 ProductReview.belongsTo(Product, { foreignKey: "productId" });
 ProductReview.belongsTo(User, { foreignKey: "userId" });
@@ -45,11 +49,25 @@ const port = process.env.PORT;
 
 const app = express();
 
+const trustProxy = process.env.TRUST_PROXY?.trim();
+if (trustProxy) {
+  const hops = Number(trustProxy);
+  app.set("trust proxy", Number.isFinite(hops) && hops > 0 ? hops : trustProxy);
+}
+
 app.use("/api/webhooks", stripeRoutes);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+
+const frontendOrigin = process.env.FRONTEND_ORIGIN?.trim();
+app.use(
+  cors(
+    frontendOrigin
+      ? { origin: frontendOrigin.split(",").map((o) => o.trim()) }
+      : undefined
+  )
+);
 
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
@@ -58,15 +76,18 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/overview", overviewRoutes);
 app.use("/api/contact", contactRoutes);
 
-app.use("/uploads", express.static("uploads"));
-
 app.post(
   "/api/create-payment-intent",
+  paymentLimiter,
   async (req: Request, res: Response, next: NextFunction) => {
     const { id, amount, currency } = req.body;
-    const stripe = new Stripe(
-      process.env.STRIPE_SECRET_KEY_TEST_MODE as string,
-    );
+    const secretKey = stripeSecretKey();
+    if (!secretKey) {
+      res.status(500);
+      next(new Error("Stripe secret key is not configured for DEPLOY_TARGET"));
+      return;
+    }
+    const stripe = new Stripe(secretKey);
 
     try {
       const paymentIntent = await stripe.paymentIntents.create({
@@ -78,7 +99,7 @@ app.post(
         clientSecret: paymentIntent.client_secret,
       });
     } catch (error) {
-      console.log(error);
+      console.log("create-payment-intent:", error, { ip: clientIp(req) });
       next(error);
     }
   },
@@ -116,11 +137,15 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(
   (
     err: Error & { statusCode?: number },
-    _req: Request,
+    req: Request,
     res: Response,
     _next: NextFunction,
   ) => {
-    console.log("err:", err);
+    console.log("err:", err.message, {
+      ip: clientIp(req),
+      method: req.method,
+      url: req.originalUrl,
+    });
     const statusCode =
       err.statusCode ?? (res.statusCode !== 200 ? res.statusCode : 500) ?? 500;
     const message = err.message || "An unknown error occurred !";
@@ -135,6 +160,7 @@ app.listen(port, () => {
 (async () => {
   try {
     await sequelize.sync();
+    await ensureClientIpColumns();
     console.log("All models were synchronized successfully.");
   } catch (error) {
     console.log(error);

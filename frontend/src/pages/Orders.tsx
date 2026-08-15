@@ -15,13 +15,14 @@ import type { MessageProps, Order } from "@/types";
 import { Card } from "@/components/ui/card";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { env } from "@/lib/env";
 
 const loader =
   (language: string): LoaderFunction =>
   async () => {
     const token = localStorage.getItem("token");
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/orders/mine?language=${language}`,
+      `${env.backendUrl}/orders/mine?language=${language}`,
       {
         headers: {
           authorization: "Bearer " + token,

@@ -10,7 +10,7 @@ import {
 } from "../controllers/productController.js";
 
 import { admin, protect } from "../middleware/authMiddleware.js";
-import fileUpload from "../middleware/file-upload-aws.js";
+import fileUpload from "../middleware/file-upload-gcs.js";
 
 const router = Router();
 

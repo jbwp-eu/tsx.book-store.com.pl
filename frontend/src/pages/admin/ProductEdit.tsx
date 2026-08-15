@@ -13,13 +13,14 @@ import {
 } from "react-router-dom";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { env } from "@/lib/env";
 
 const loader =
   (language: string): LoaderFunction =>
   async ({ params }) => {
     const { id } = params;
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/products/${id}?language=${language}`
+      `${env.backendUrl}/products/${id}?language=${language}`
     );
     if (!response.ok) {
       const resData = await response.json();
@@ -88,7 +89,7 @@ const action =
     // console.log("data.get.banner:", data.get("banner"));
 
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/products/${id}?language=${language}`,
+      `${env.backendUrl}/products/${id}?language=${language}`,
       {
         method,
         headers: {

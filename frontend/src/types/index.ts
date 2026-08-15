@@ -74,6 +74,7 @@ export type Order = {
   createdAt: Date;
   updatedAt: Date;
   UserId: string;
+  clientIp?: string | null;
   OrderItems?: OrderItem[];
   User?: User;
 };

@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { useAppDispatch } from "@/store/hook";
 import { setCredentials } from "@/store/authSlice";
 import { useTranslation } from "react-i18next";
+import { env } from "@/lib/env";
 
 const loader =
   (language: string): LoaderFunction =>
@@ -19,7 +20,7 @@ const loader =
     const { id } = params;
     const token = localStorage.getItem("token");
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/orders/${id}?language=${language}`,
+      `${env.backendUrl}/orders/${id}?language=${language}`,
       {
         headers: {
           authorization: "Bearer " + token,
@@ -78,7 +79,7 @@ const action =
     const token = localStorage.getItem("token");
     const response = await fetch(
       `${
-        import.meta.env.VITE_BACKEND_URL
+        env.backendUrl
       }/orders/${id}/deliver?language=${language}`,
       {
         method,

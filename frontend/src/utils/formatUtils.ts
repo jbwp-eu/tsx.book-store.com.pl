@@ -1,3 +1,4 @@
+import { env } from "@/lib/env";
 export function formatId(id: string) {
   return `..${id.substring(id.length - 6)}`;
 }
@@ -6,7 +7,7 @@ export function formateDate(date: Date) {
   return new Date(date).toLocaleString();
 }
 
-const CURRENCY = import.meta.env.VITE_CURRENCY;
+const CURRENCY = env.currency;
 
 let currency;
 

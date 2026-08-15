@@ -6,6 +6,7 @@ import { formatCurrency } from "@/utils/formatUtils";
 import type { MessageProps, Order } from "@/types";
 import Message from "@/components/Message";
 import { useTranslation } from "react-i18next";
+import { env } from "@/lib/env";
 
 const StripeFormPage = () => {
   const { t } = useTranslation();
@@ -29,9 +30,7 @@ const StripeFormPage = () => {
     const result = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${
-          import.meta.env.VITE_STRIPE_CONFIRMPAYMENT_URL
-        }/order/${id}/stripe-payment-success`,
+        return_url: `${env.stripeConfirmPaymentUrl}/order/${id}/stripe-payment-success`,
       },
     });
 

@@ -1,6 +1,7 @@
 import { type CartState } from "@/store/cartSlice";
+import { env } from "@/lib/env";
 
-const TAX = import.meta.env.VITE_TAX;
+const TAX = env.tax;
 
 // export const addDecimals = (num: number) => {
 //   return Number((Math.round(num * 100) / 100).toFixed(2));

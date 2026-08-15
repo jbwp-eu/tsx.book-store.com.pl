@@ -10,6 +10,7 @@ import Message from "@/components/Message.tsx";
 
 import { useContext } from "react";
 import StateContextProvider from "@/components/StateContext";
+import { env } from "@/lib/env";
 
 const loader =
   (language: string): LoaderFunction =>
@@ -22,7 +23,7 @@ const loader =
 
     const response = await fetch(
       `${
-        import.meta.env.VITE_BACKEND_URL
+        env.backendUrl
       }/products?pageNumber=${pageNumber}&language=${language}&${new URLSearchParams(
         searchParams
       )}`

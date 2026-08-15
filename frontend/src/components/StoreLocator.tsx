@@ -1,62 +1,69 @@
 import { useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "./ui/alert-dialog";
 import { Globe } from "lucide-react";
-import { Button } from "./ui/button";
 import { useTranslation } from "react-i18next";
+import StoreMap from "@/components/StoreMap";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { env } from "@/lib/env";
+
+/** Warsaw — Rondo Dmowskiego 10 (same fallback as nest / gql). */
+const FALLBACK_LAT = 52.2299538;
+const FALLBACK_LNG = 21.0123946;
 
 const StoreLocator = () => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
+  const lat = env.storeLatitude ?? FALLBACK_LAT;
+  const lng = env.storeLongitude ?? FALLBACK_LNG;
+  const hasLocation =
+    typeof lat === "number" &&
+    typeof lng === "number" &&
+    !Number.isNaN(lat) &&
+    !Number.isNaN(lng);
+
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger className="hover:cursor-pointer">
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger className="hover:cursor-pointer">
         <Globe />
         <h2 className="font-semibold">{t("footer.store_locator")}</h2>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>
-            <p className="h2-semibold">{t("footer.store_locator")}</p>
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            <div className="mt-4">
-              <iframe
-                src="https://sl-widget.proguscommerce.com/main?shop=f2e861df-1afc-44be-ad9f-ee22d1779fa3313"
-                width="100%"
-                height="500"
-                style={{ border: 0 }}
-                allow="geolocation"
-                allowFullScreen
-              />
-            </div>
-          </AlertDialogDescription>
+      </DialogTrigger>
+      <DialogContent className="border bg-card text-card-foreground shadow-xl sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="text-foreground">
+            {t("storeMap.title")}
+          </DialogTitle>
+          <DialogDescription className="text-muted-foreground underline">
+            {t("storeMap.comingSoon")}
+          </DialogDescription>
+        </DialogHeader>
 
-          <AlertDialogFooter>
-            <AlertDialogCancel asChild>
-              <Button
-                className="mr-auto"
-                variant="outline"
-                onClick={() => {
-                  setOpen(false);
-                }}
-              >
-                {t("reviewForm.button_cancel")}
-              </Button>
-            </AlertDialogCancel>
-          </AlertDialogFooter>
-        </AlertDialogHeader>
-      </AlertDialogContent>
-    </AlertDialog>
+        {hasLocation ? (
+          <StoreMap lat={lat} lng={lng} title={env.storeName} />
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            {t("storeMap.unavailable")}
+          </p>
+        )}
+
+        <p className="text-sm text-foreground underline decoration-destructive underline-offset-2">
+          {t("storeMap.hint")}
+        </p>
+
+        <div className="flex justify-end">
+          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            {t("storeMap.close")}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

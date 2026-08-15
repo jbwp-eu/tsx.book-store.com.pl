@@ -22,6 +22,7 @@ import { useEffect } from "react";
 import { formatCurrency } from "@/utils/formatUtils";
 import Image from "@/components/Image";
 import { useTranslation } from "react-i18next";
+import { env } from "@/lib/env";
 
 const PlaceOrder = () => {
   const { t } = useTranslation();
@@ -169,7 +170,7 @@ const action =
 
     const token = localStorage.getItem("token");
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/orders?language=${language}`,
+      `${env.backendUrl}/orders?language=${language}`,
       {
         method: "POST",
         headers: {

@@ -4,96 +4,61 @@ import Order from "../models/order.js";
 import User from "../models/user.js";
 import type { OrderInstance } from "../types/index.js";
 import type { UserInstance } from "../types/index.js";
+import { tryEnqueueOrderConfirmation } from "./orderConfirmationQueue.js";
 
 type OrderWithUser = OrderInstance & { User: UserInstance };
 
-export const sendPurchaseReceipt = async (
-  updatedOrderId: string,
-  language: string,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const updatedOrder = (await Order.findByPk(updatedOrderId, {
-      include: [User],
-    })) as OrderWithUser | null;
+async function sendSmtpPurchaseReceipt(
+  updatedOrder: OrderWithUser,
+  language: string
+): Promise<void> {
+  const date = new Date().toLocaleString();
+  const ln = String(language);
 
-    const date = new Date().toLocaleString();
+  const host = process.env.SMTP_HOST;
+  const port = Number(process.env.SMTP_PORT) || 465;
+  const smtpUser = process.env.SMTP_USER;
+  const password = process.env.SMTP_PASSWORD;
+  const domain = process.env.DOMAIN;
 
-    const ln = String(language);
+  const to_1 = updatedOrder.User.email;
+  const to_3 = process.env.TO_3;
 
-    if (!updatedOrder) {
-      res.status(404).json({
-        message: ln === "pl" ? "Nie znaleziono zamówienia" : "Order not found",
-      });
-      return;
-    }
+  const transporter = nodemailer.createTransport({
+    host,
+    port,
+    requireTLS: true,
+    auth: {
+      user: smtpUser,
+      pass: password,
+    },
+  });
 
-    const host = process.env.SMTP_HOST;
-    const port = Number(process.env.SMTP_PORT) || 465;
-    const smtpUser = process.env.SMTP_USER;
-    const password = process.env.SMTP_PASSWORD;
-    const domain = process.env.DOMAIN;
+  const from = `"BookStore" <tsx@${domain}>`;
+  const to = `<${to_1}>,<${to_3}>`;
+  const subject =
+    ln === "pl" ? "Potwierdzenie zamówienia" : "Order confirmation";
 
-    const to_1 = updatedOrder.User.email;
-    const to_3 = process.env.TO_3;
+  const { id, totalPrice, itemsPrice, shippingPrice } = updatedOrder;
+  const shippingPriceNum =
+    typeof shippingPrice === "string" ? parseFloat(shippingPrice) : shippingPrice;
 
-    const transporter = nodemailer.createTransport({
-      host,
-      port,
-      requireTLS: true,
-      auth: {
-        user: smtpUser,
-        pass: password,
-      },
-    });
-
-    const from = `"BookStore" <tsx@${domain}>`;
-
-    const to = `<${to_1}>,<${to_3}>`;
-
-    const subject =
-      ln === "pl" ? "Potwierdzenie zamówienia" : "Order confirmation";
-
-    const { id, totalPrice, itemsPrice, shippingPrice } = updatedOrder;
-
-    const shippingPriceNum =
-      typeof shippingPrice === "string" ? parseFloat(shippingPrice) : shippingPrice;
-
-    const info = await transporter.sendMail({
-      from,
-      to,
-      subject,
-      html: `<head>
+  const info = await transporter.sendMail({
+    from,
+    to,
+    subject,
+    html: `<head>
                 <meta charset="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <title>Purchase Receipt</title>
                 <style>
-                  h2 {
-                    color: gray;
-                  }
-                  section {
-                    padding: 5px;
-                  }
-                  table {
-                    width: 90%;
-                    }
-                  th {
-                    font-weight: 400;
-                    text-align: left;
-                    color: grey;
-                  }
-                  td {
-                    font-weight: 300;
-                    color: grey;
-                    text-align: right;
-                  }
-                  tr {
-                    justify-content: space-between;
-                  }
-                  #totalPrice {
-                    font-weight: 700;
-                  }
+                  h2 { color: gray; }
+                  section { padding: 5px; }
+                  table { width: 90%; }
+                  th { font-weight: 400; text-align: left; color: grey; }
+                  td { font-weight: 300; color: grey; text-align: right; }
+                  tr { justify-content: space-between; }
+                  #totalPrice { font-weight: 700; }
                 </style>
             </head>
             <body>
@@ -127,9 +92,54 @@ export const sendPurchaseReceipt = async (
                 </table>
               </section>
             </body>`,
+  });
+
+  console.log("Sent message id: %s", info.messageId);
+}
+
+export const sendPurchaseReceipt = async (
+  updatedOrderId: string,
+  language: string,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const updatedOrder = (await Order.findByPk(updatedOrderId, {
+      include: [User],
+    })) as OrderWithUser | null;
+
+    const ln = String(language);
+
+    if (!updatedOrder) {
+      res.status(404).json({
+        message: ln === "pl" ? "Nie znaleziono zamówienia" : "Order not found",
+      });
+      return;
+    }
+
+    const enqueued = await tryEnqueueOrderConfirmation({
+      orderId: updatedOrder.id,
+      language: ln,
+      userEmail: updatedOrder.User.email,
+      totalPrice: updatedOrder.totalPrice,
+      itemsPrice: updatedOrder.itemsPrice,
+      shippingPrice: updatedOrder.shippingPrice,
+      paidAt: updatedOrder.paidAt
+        ? new Date(updatedOrder.paidAt).toISOString()
+        : new Date().toISOString(),
+      storeName: "BookStore",
     });
 
-    console.log("Sent message id: %s", info.messageId);
+    if (!enqueued) {
+      console.log(
+        `[OrderConfirmation] Falling back to in-process SMTP for order ${updatedOrder.id}`
+      );
+      await sendSmtpPurchaseReceipt(updatedOrder, language);
+    } else {
+      console.log(
+        `[OrderConfirmation] Cloud Function path selected for order ${updatedOrder.id}`
+      );
+    }
 
     res.status(201).json({
       message: language === "pl" ? "Płatność wykonana" : "Payment successful",

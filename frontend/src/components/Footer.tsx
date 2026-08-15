@@ -6,6 +6,7 @@ import { type ActionFunctionArgs } from "react-router-dom";
 import { toast } from "sonner";
 import StoreLocator from "./StoreLocator";
 import { useTranslation } from "react-i18next";
+import { env } from "@/lib/env";
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -57,7 +58,7 @@ const action =
     const data = await request.json();
 
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/contact?language=${language}`,
+      `${env.backendUrl}/contact?language=${language}`,
       {
         method,
         headers: {

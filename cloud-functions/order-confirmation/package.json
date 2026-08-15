@@ -1,0 +1,12 @@
+{
+  "name": "tsx-order-confirmation",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "nodemailer": "^7.0.5"
+  }
+}

@@ -23,6 +23,7 @@ import type { MessageProps, Order } from "@/types";
 import Pagination from "@/components/Pagination";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { env } from "@/lib/env";
 
 const loader =
   (language: string): LoaderFunction =>
@@ -32,7 +33,7 @@ const loader =
 
     const response = await fetch(
       `${
-        import.meta.env.VITE_BACKEND_URL
+        env.backendUrl
       }/orders?pageNumber=${pageNumber}&language=${language}`,
       {
         headers: {
@@ -160,7 +161,7 @@ const action =
     const token = localStorage.getItem("token");
 
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/orders/${id}?language=${language}`,
+      `${env.backendUrl}/orders/${id}?language=${language}`,
       {
         method,
         headers: {

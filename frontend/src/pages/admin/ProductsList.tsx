@@ -23,6 +23,7 @@ import DeleteDialog from "@/components/DeleteDialog";
 import Pagination from "@/components/Pagination";
 import type { DataProducts, MessageProps } from "@/types";
 import { useTranslation } from "react-i18next";
+import { env } from "@/lib/env";
 
 const loader =
   (language: string): LoaderFunction =>
@@ -31,7 +32,7 @@ const loader =
 
     const response = await fetch(
       `${
-        import.meta.env.VITE_BACKEND_URL
+        env.backendUrl
       }/products?pageNumber=${pageNumber}&language=${language}`
     );
     if (!response.ok) {
@@ -148,7 +149,7 @@ const action =
 
     if (intent === "create") {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/products?language=${language}`,
+        `${env.backendUrl}/products?language=${language}`,
         {
           method,
           headers: {
@@ -170,7 +171,7 @@ const action =
     if (intent === "delete") {
       const response = await fetch(
         `${
-          import.meta.env.VITE_BACKEND_URL
+          env.backendUrl
         }/products/${id}?language=${language}`,
         {
           method,

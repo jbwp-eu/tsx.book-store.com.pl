@@ -1,12 +1,13 @@
 import { Full } from "./Rating";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { env } from "@/lib/env";
 
 const ratings = ["any", 4, 3, 2, 1];
 
 const prices = ["any", "0-25", "25-50", "50-75", "75-100", "100-200"];
 
-const CURRENCY = import.meta.env.VITE_CURRENCY;
+const CURRENCY = env.currency;
 
 const Filter = ({
   getFilterUrl,

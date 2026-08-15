@@ -19,6 +19,7 @@ import {
 } from "react-router-dom";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { env } from "@/lib/env";
 
 const loader =
   (language: string): LoaderFunction =>
@@ -27,7 +28,7 @@ const loader =
     const { pageNumber } = params;
     const response = await fetch(
       `${
-        import.meta.env.VITE_BACKEND_URL
+        env.backendUrl
       }/reviews/?pageNumber=${pageNumber}&language=${language}`,
       {
         headers: {
@@ -130,7 +131,7 @@ const action =
     const { method } = request;
     const token = localStorage.getItem("token");
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/reviews/${id}?language=${language}`,
+      `${env.backendUrl}/reviews/${id}?language=${language}`,
       {
         method,
         headers: {

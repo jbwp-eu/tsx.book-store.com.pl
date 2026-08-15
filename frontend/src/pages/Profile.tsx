@@ -4,6 +4,7 @@ import { logout, setCredentials } from "@/store/authSlice";
 import type { AppDispatch } from "@/store/store";
 import { redirect, type ActionFunctionArgs } from "react-router-dom";
 import { toast } from "sonner";
+import { env } from "@/lib/env";
 
 const ProfilePage = () => {
   return (
@@ -35,7 +36,7 @@ const action =
     const token = localStorage.getItem("token");
 
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/users/profile?language=${language}`,
+      `${env.backendUrl}/users/profile?language=${language}`,
       {
         method,
         headers: {

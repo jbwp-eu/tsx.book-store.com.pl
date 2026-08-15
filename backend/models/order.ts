@@ -15,6 +15,7 @@ export interface OrderAttributes {
   isDelivered: boolean;
   deliveredAt?: Date | null;
   paymentResult?: Record<string, unknown> | null;
+  clientIp?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -27,6 +28,7 @@ export interface OrderCreationAttributes
     | "paidAt"
     | "deliveredAt"
     | "paymentResult"
+    | "clientIp"
     | "createdAt"
     | "updatedAt"
   > {}
@@ -88,6 +90,10 @@ const Order = sequelize.define<OrderInstance>(
       type: DataTypes.DATE,
     },
     paymentResult: { type: DataTypes.JSON, allowNull: true },
+    clientIp: {
+      type: DataTypes.STRING(45),
+      allowNull: true,
+    },
   },
   {
     timestamps: true,

@@ -8,10 +8,11 @@ import { useSubmit } from "react-router-dom";
 import type { Order } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
+import { env } from "@/lib/env";
 
 const OrderSummary = ({ order }: { order: Order }) => {
   const { t } = useTranslation();
-  const currency = import.meta.env.VITE_CURRENCY;
+  const currency = env.currency;
   const { userInfo } = useAppSelector((state) => state.auth);
   const [loading, setIsLoading] = useState(false);
   const [clientSecret, setClientSecret] = useState("");
@@ -39,7 +40,7 @@ const OrderSummary = ({ order }: { order: Order }) => {
         const amount = Math.round(Number(totalPrice) * 100);
         setIsLoading(true);
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/create-payment-intent`,
+          `${env.backendUrl}/create-payment-intent`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

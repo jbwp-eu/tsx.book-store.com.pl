@@ -1,0 +1,18 @@
+[Unit]
+Description=tsx.book-store.com.pl Node app (OVH)
+After=network.target mysql.service
+Wants=mysql.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/var/www/tsx-book-store/current
+Environment=NODE_ENV=production
+EnvironmentFile=/var/www/tsx-book-store/shared/.env.production
+ExecStart=/usr/bin/node backend/dist/server.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

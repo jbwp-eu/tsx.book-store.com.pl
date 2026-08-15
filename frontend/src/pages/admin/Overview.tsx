@@ -30,11 +30,12 @@ import {
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { env } from "@/lib/env";
 
 const loader = (language: string) => async () => {
   const token = localStorage.getItem("token");
   const response = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/overview?language=${language}`,
+    `${env.backendUrl}/overview?language=${language}`,
     {
       headers: {
         authorization: "Bearer " + token,
