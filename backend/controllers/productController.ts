@@ -355,25 +355,25 @@ export const updateProduct = async (
 
     let images: string[] | undefined;
     if (files?.images && files.images.length !== 0) {
+      images = [];
+      for (const file of files.images) {
+        images.push(await uploadFile(file));
+      }
       for (let i = 0; i < productImages.length; i++) {
         if (isGcsObjectKey(productImages[i])) {
           await deleteFile(productImages[i]);
         }
       }
-      images = [];
-      for (const file of files.images) {
-        images.push(await uploadFile(file));
-      }
     }
 
     let banners: string[] | undefined;
     if (files?.banners && files.banners.length !== 0) {
-      if (productBanners[0] && isGcsObjectKey(productBanners[0])) {
-        await deleteFile(productBanners[0]);
-      }
       banners = [];
       for (const file of files.banners) {
         banners.push(await uploadFile(file));
+      }
+      if (productBanners[0] && isGcsObjectKey(productBanners[0])) {
+        await deleteFile(productBanners[0]);
       }
     }
 

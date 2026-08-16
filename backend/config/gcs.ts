@@ -32,15 +32,24 @@ export async function uploadFile(file: Express.Multer.File): Promise<string> {
   console.log(
     `[GCS] Saving file to bucket "${bucketName}", object="${imageName}", contentType=${file.mimetype}, size=${file.buffer?.length ?? 0} bytes`
   );
-  await bucket.file(imageName).save(file.buffer, {
-    contentType: file.mimetype,
-    resumable: false,
-    // Avoid HashStreamValidator "write after destroyed" with parallel/buffer uploads
-    validation: false,
-    metadata: {
-      cacheControl: "public, max-age=31536000",
-    },
+
+  await new Promise<void>((resolve, reject) => {
+    const stream = bucket.file(imageName).createWriteStream({
+      resumable: false,
+      validation: false,
+      metadata: {
+        contentType: file.mimetype,
+        cacheControl: "public, max-age=31536000",
+      },
+    });
+    stream.on("error", (err) => {
+      console.error(`[GCS] Upload stream error for "${imageName}":`, err);
+      reject(err);
+    });
+    stream.on("finish", () => resolve());
+    stream.end(file.buffer);
   });
+
   console.log(
     `[GCS] File saved successfully in bucket "${bucketName}": ${imageName}`
   );
