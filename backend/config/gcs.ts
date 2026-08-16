@@ -1,9 +1,6 @@
 import { Storage } from "@google-cloud/storage";
 import dotenv from "dotenv";
 import crypto from "crypto";
-import fs from "fs/promises";
-import os from "os";
-import path from "path";
 
 dotenv.config();
 
@@ -18,7 +15,19 @@ function getBucketName(): string {
   return name;
 }
 
+/**
+ * Ignore invalid GOOGLE_APPLICATION_CREDENTIALS (e.g. "#" from a bad .env line).
+ * Otherwise google-auth opens that path instead of GCE metadata ADC.
+ */
+function sanitizeApplicationCredentials(): void {
+  const credPath = process.env.GOOGLE_APPLICATION_CREDENTIALS?.trim();
+  if (!credPath || credPath === "#" || credPath.startsWith("#")) {
+    delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
+  }
+}
+
 function getStorage(): Storage {
+  sanitizeApplicationCredentials();
   const projectId = process.env.GCS_PROJECT_ID?.trim() || undefined;
   return new Storage(projectId ? { projectId } : undefined);
 }
@@ -28,36 +37,23 @@ export function isGcsObjectKey(key: string): boolean {
   return key.startsWith("gcs");
 }
 
-/**
- * Upload via temp file + bucket.upload.
- * file.save(buffer) / createWriteStream break under Express+Multer on GCE Linux
- * ("Cannot call write after a stream was destroyed") even though the same SDK
- * works from a standalone script — path-based upload is reliable there.
- */
 export async function uploadFile(file: Express.Multer.File): Promise<string> {
   const imageName = "gcs" + randomImageName();
   const bucketName = getBucketName();
   const bucket = getStorage().bucket(bucketName);
   const data = Buffer.from(file.buffer);
-  const tmpPath = path.join(os.tmpdir(), imageName);
 
   console.log(
-    `[GCS] Saving file to bucket "${bucketName}", object="${imageName}", contentType=${file.mimetype}, size=${data.length} bytes (via temp file)`
+    `[GCS] Saving file to bucket "${bucketName}", object="${imageName}", contentType=${file.mimetype}, size=${data.length} bytes`
   );
 
-  await fs.writeFile(tmpPath, data);
-  try {
-    await bucket.upload(tmpPath, {
-      destination: imageName,
-      resumable: false,
-      metadata: {
-        contentType: file.mimetype,
-        cacheControl: "public, max-age=31536000",
-      },
-    });
-  } finally {
-    await fs.unlink(tmpPath).catch(() => undefined);
-  }
+  await bucket.file(imageName).save(data, {
+    resumable: false,
+    contentType: file.mimetype,
+    metadata: {
+      cacheControl: "public, max-age=31536000",
+    },
+  });
 
   console.log(
     `[GCS] File saved successfully in bucket "${bucketName}": ${imageName}`
