@@ -355,32 +355,25 @@ export const updateProduct = async (
 
     let images: string[] | undefined;
     if (files?.images && files.images.length !== 0) {
-      try {
-        for (let i = 0; i < productImages.length; i++) {
-          if (isGcsObjectKey(productImages[i])) {
-            await deleteFile(productImages[i]);
-          }
+      for (let i = 0; i < productImages.length; i++) {
+        if (isGcsObjectKey(productImages[i])) {
+          await deleteFile(productImages[i]);
         }
-        images =
-          (await Promise.all(files.images.map((file) => uploadFile(file)))) ||
-          product.images as string[];
-      } catch (err) {
-        console.log(err);
+      }
+      images = [];
+      for (const file of files.images) {
+        images.push(await uploadFile(file));
       }
     }
 
     let banners: string[] | undefined;
     if (files?.banners && files.banners.length !== 0) {
-      try {
-        if (productBanners[0] && isGcsObjectKey(productBanners[0])) {
-          await deleteFile(productBanners[0]);
-        }
-        banners =
-          (await Promise.all(
-            files.banners.map(async (file) => await uploadFile(file))
-          )) || (product.banners as string[]);
-      } catch (err) {
-        console.log(err);
+      if (productBanners[0] && isGcsObjectKey(productBanners[0])) {
+        await deleteFile(productBanners[0]);
+      }
+      banners = [];
+      for (const file of files.banners) {
+        banners.push(await uploadFile(file));
       }
     }
 

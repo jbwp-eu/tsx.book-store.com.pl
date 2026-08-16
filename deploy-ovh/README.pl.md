@@ -35,3 +35,14 @@ MySQL i Node (`3003`) tylko na `127.0.0.1`.
 ## Deploy
 
 **Actions** → **Deploy to OVH** → branch `main`.
+
+## Seed bazy
+
+Po pierwszym deployu (puste tabele):
+
+```bash
+cd /var/www/tsx-book-store/current
+node backend/dist/seeder.js -i
+```
+
+Admin: `admin@test.pl` / `ADMIN_PASSWORD` z `shared/.env.production`. Szczegóły: [README.md § 4](README.md#database-seed-products--admin-user).

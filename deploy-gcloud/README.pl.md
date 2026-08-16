@@ -297,6 +297,20 @@ sudo systemctl status tsx-book-store
 journalctl -u tsx-book-store -e
 ```
 
+### Seed bazy (produkty + admin)
+
+Po pierwszym deployu Sequelize tworzy puste tabele. Seed uruchom raz z aktywnego release (wymaga `shared/.env.production` jako `.env`, w tym `ADMIN_PASSWORD` i `DB_*`):
+
+```bash
+cd /var/www/tsx-book-store/current
+node backend/dist/seeder.js -i          # import produktów i userów
+# node backend/dist/seeder.js -d        # UWAGA: kasuje products, users, orders, messages
+```
+
+(`npm run seed` / `npm run seed:destroy` używają `tsx` — lokalnie przy pełnym `npm ci`; na VM lepiej `node backend/dist/seeder.js`, bo produkcyjny `npm ci --omit=dev` nie instaluje `tsx`.)
+
+Admin po seedzie: email `admin@test.pl`, hasło = `ADMIN_PASSWORD` z env. Kod: `backend/seeder.ts`, `backend/users.ts`, `backend/products.ts`.
+
 ### Mail po zakupie (Pub/Sub + Cloud Function)
 
 Na Google ustaw `ORDER_CONFIRMATION_TOPIC`. VM publikuje; Function wysyła SMTP (`SMTP_*` na Function). W logach Function szukaj `[CloudFunction] orderConfirmation invoked`.

@@ -35,6 +35,8 @@ export async function uploadFile(file: Express.Multer.File): Promise<string> {
   await bucket.file(imageName).save(file.buffer, {
     contentType: file.mimetype,
     resumable: false,
+    // Avoid HashStreamValidator "write after destroyed" with parallel/buffer uploads
+    validation: false,
     metadata: {
       cacheControl: "public, max-age=31536000",
     },
