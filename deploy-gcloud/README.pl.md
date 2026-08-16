@@ -271,9 +271,9 @@ Użyj pary sekretów Stripe **GOOGLE** (`STRIPE_*_TEST_MODE_GOOGLE`).
 
 ## 8. GitHub — sekrety i zmienne
 
-**Secrets:** `GCLOUD_HOST`, `GCLOUD_SSH_KEY`, `VITE_STRIPE_PUBLISHABLE_KEY_TEST_MODE_GOOGLE`
+**Secrets:** `GCLOUD_HOST`, `GCLOUD_SSH_KEY`, `VITE_STRIPE_PUBLISHABLE_KEY_TEST_MODE_GOOGLE`, `VITE_GOOGLE_MAPS_API_KEY`
 
-**Variables:** `DEPLOY_BASE_URL_GCLOUD=https://tsx.book-store.website`, opcjonalnie `GCLOUD_USER` (domyślnie `ubuntu`), opcjonalnie `GCLOUD_SSH_PORT` (domyślnie `22`)
+**Variables:** `DEPLOY_BASE_URL_GCLOUD=https://tsx.book-store.website`, opcjonalnie `GCLOUD_USER` (domyślnie `ubuntu`), opcjonalnie `GCLOUD_SSH_PORT` (domyślnie `22`), opcjonalnie `VITE_GOOGLE_MAPS_MAP_ID`, opcjonalnie `VITE_STORE_NAME` / `VITE_STORE_LATITUDE` / `VITE_STORE_LONGITUDE`
 
 Klucz publiczny deployu w `~/.ssh/authorized_keys` użytkownika na VM. Firewall musi przepuszczać CI (lub Twoje IP) na tcp:22, albo zewnętrzne IP + auth kluczem.
 

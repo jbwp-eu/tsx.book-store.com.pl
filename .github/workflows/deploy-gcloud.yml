@@ -1,6 +1,8 @@
 # Deploy Google Compute Engine — tsx.book-store.website
-# Secrets: GCLOUD_HOST, GCLOUD_SSH_KEY, VITE_STRIPE_PUBLISHABLE_KEY_TEST_MODE_GOOGLE
-# Variables: DEPLOY_BASE_URL_GCLOUD (https://tsx.book-store.website), GCLOUD_USER (optional)
+# Secrets: GCLOUD_HOST, GCLOUD_SSH_KEY, VITE_STRIPE_PUBLISHABLE_KEY_TEST_MODE_GOOGLE,
+#          VITE_GOOGLE_MAPS_API_KEY
+# Variables: DEPLOY_BASE_URL_GCLOUD (https://tsx.book-store.website), GCLOUD_USER (optional),
+#            VITE_GOOGLE_MAPS_MAP_ID, VITE_STORE_NAME / VITE_STORE_LATITUDE / VITE_STORE_LONGITUDE (optional)
 name: Deploy to Google Cloud
 
 on:
@@ -37,6 +39,11 @@ jobs:
           VITE_TAX: "0"
           VITE_STRIPE_PUBLISHABLE_KEY_TEST_MODE_GOOGLE: ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY_TEST_MODE_GOOGLE }}
           VITE_STRIPE_CONFIRMPAYMENT_URL_GOOGLE: ${{ vars.DEPLOY_BASE_URL_GCLOUD || 'https://tsx.book-store.website' }}
+          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+          VITE_GOOGLE_MAPS_MAP_ID: ${{ vars.VITE_GOOGLE_MAPS_MAP_ID }}
+          VITE_STORE_NAME: ${{ vars.VITE_STORE_NAME || 'BookStore' }}
+          VITE_STORE_LATITUDE: ${{ vars.VITE_STORE_LATITUDE }}
+          VITE_STORE_LONGITUDE: ${{ vars.VITE_STORE_LONGITUDE }}
         run: |
           npm ci
           npm ci --prefix frontend

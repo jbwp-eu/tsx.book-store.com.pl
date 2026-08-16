@@ -271,9 +271,9 @@ Use the **GOOGLE** Stripe secret / webhook secret pair (`STRIPE_*_TEST_MODE_GOOG
 
 ## 8. GitHub — secrets and variables
 
-**Secrets:** `GCLOUD_HOST`, `GCLOUD_SSH_KEY`, `VITE_STRIPE_PUBLISHABLE_KEY_TEST_MODE_GOOGLE`
+**Secrets:** `GCLOUD_HOST`, `GCLOUD_SSH_KEY`, `VITE_STRIPE_PUBLISHABLE_KEY_TEST_MODE_GOOGLE`, `VITE_GOOGLE_MAPS_API_KEY`
 
-**Variables:** `DEPLOY_BASE_URL_GCLOUD=https://tsx.book-store.website`, optional `GCLOUD_USER` (default `ubuntu`), optional `GCLOUD_SSH_PORT` (default `22`)
+**Variables:** `DEPLOY_BASE_URL_GCLOUD=https://tsx.book-store.website`, optional `GCLOUD_USER` (default `ubuntu`), optional `GCLOUD_SSH_PORT` (default `22`), optional `VITE_GOOGLE_MAPS_MAP_ID`, optional `VITE_STORE_NAME` / `VITE_STORE_LATITUDE` / `VITE_STORE_LONGITUDE`
 
 Deploy public key in the VM user’s `~/.ssh/authorized_keys`. Firewall must allow CI (or your IP) on tcp:22, or use a reachable external IP + key auth.
 

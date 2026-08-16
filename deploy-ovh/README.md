@@ -107,9 +107,9 @@ ssh -p 49152 ubuntu@<OVH_HOST> \
 
 ## 2. GitHub — secrets and variables
 
-**Secrets:** `OVH_HOST`, `OVH_SSH_KEY`, `VITE_STRIPE_PUBLISHABLE_KEY_TEST_MODE_OVH`
+**Secrets:** `OVH_HOST`, `OVH_SSH_KEY`, `VITE_STRIPE_PUBLISHABLE_KEY_TEST_MODE_OVH`, `VITE_GOOGLE_MAPS_API_KEY`
 
-**Variables:** `DEPLOY_BASE_URL_OVH=https://tsx.book-store.com.pl`, optional `OVH_USER` (default `ubuntu`)
+**Variables:** `DEPLOY_BASE_URL_OVH=https://tsx.book-store.com.pl`, optional `OVH_USER` (default `ubuntu`), optional `VITE_GOOGLE_MAPS_MAP_ID`, optional `VITE_STORE_NAME` / `VITE_STORE_LATITUDE` / `VITE_STORE_LONGITUDE`
 
 SSH port is **49152**. Deploy public key in `~/.ssh/authorized_keys`.
 
