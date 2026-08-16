@@ -29,25 +29,19 @@ export async function uploadFile(file: Express.Multer.File): Promise<string> {
   const imageName = "gcs" + randomImageName();
   const bucketName = getBucketName();
   const bucket = getStorage().bucket(bucketName);
+  // Copy Multer's buffer — passing file.buffer directly can break GCS streams on Linux/prod
+  const data = Buffer.from(file.buffer);
   console.log(
-    `[GCS] Saving file to bucket "${bucketName}", object="${imageName}", contentType=${file.mimetype}, size=${file.buffer?.length ?? 0} bytes`
+    `[GCS] Saving file to bucket "${bucketName}", object="${imageName}", contentType=${file.mimetype}, size=${data.length} bytes`
   );
 
-  await new Promise<void>((resolve, reject) => {
-    const stream = bucket.file(imageName).createWriteStream({
-      resumable: false,
-      validation: false,
-      metadata: {
-        contentType: file.mimetype,
-        cacheControl: "public, max-age=31536000",
-      },
-    });
-    stream.on("error", (err) => {
-      console.error(`[GCS] Upload stream error for "${imageName}":`, err);
-      reject(err);
-    });
-    stream.on("finish", () => resolve());
-    stream.end(file.buffer);
+  await bucket.file(imageName).save(data, {
+    resumable: false,
+    validation: false,
+    contentType: file.mimetype,
+    metadata: {
+      cacheControl: "public, max-age=31536000",
+    },
   });
 
   console.log(
