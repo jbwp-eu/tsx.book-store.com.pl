@@ -1,9 +1,6 @@
+import "./loadEnv.js";
 import path from "path";
 import express, { Request, Response, NextFunction } from "express";
-import dotenv from "dotenv";
-
-dotenv.config();
-
 import cors from "cors";
 import productRoutes from "./routes/productRoutes.js";
 import userRoutes from "./routes/userRoutes.js";

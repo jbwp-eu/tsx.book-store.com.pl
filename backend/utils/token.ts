@@ -1,11 +1,15 @@
+import "../loadEnv.js";
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import type { JwtPayload } from "../types/index.js";
+import { resolveJwtSecret } from "./jwtSecret.js";
+
+export { resolveJwtSecret };
+
+const JWT_SECRET = resolveJwtSecret(process.env.JWT_SECRET);
 
 export function createJSONToken(userId: string): string {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) throw new Error("JWT_SECRET is not defined");
-  return jwt.sign({ userId }, secret, {
+  return jwt.sign({ userId }, JWT_SECRET, {
     expiresIn: "1h",
   });
 }
@@ -17,13 +21,8 @@ export function validateJSONToken(
   next: NextFunction
 ): JwtPayload | void {
   const { language } = req.query;
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    next(new Error("JWT_SECRET is not defined"));
-    return;
-  }
   try {
-    return jwt.verify(token, secret) as JwtPayload;
+    return jwt.verify(token, JWT_SECRET) as JwtPayload;
   } catch {
     const error = new Error(
       language === "en" ? "Not authenticated" : "Brak autoryzacji"
