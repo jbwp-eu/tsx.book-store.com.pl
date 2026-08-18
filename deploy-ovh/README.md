@@ -100,7 +100,7 @@ sudo chmod 440 /etc/sudoers.d/tsx-ubuntu
 
 scp -P 49152 deploy-ovh/activate-release.sh ubuntu@<OVH_HOST>:/tmp/
 ssh -p 49152 ubuntu@<OVH_HOST> \
-  'sudo install -m 755 /tmp/activate-release.sh /usr/local/bin/activate-release-ovh.sh'
+  'sudo install -m 755 /tmp/activate-release.sh /usr/local/bin/activate-release-tsx.sh'
 ```
 
 ---

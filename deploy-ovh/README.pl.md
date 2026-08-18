@@ -29,7 +29,7 @@ MySQL i Node (`3003`) tylko na `127.0.0.1`.
    - `DEPLOY_TARGET=ovh`, Stripe `*_TEST_MODE_OVH`
    - GCS (`GCS_*`, plik SA)
    - **bez** `ORDER_CONFIRMATION_TOPIC` (mail SMTP w Node)
-4. systemd + `activate-release-ovh.sh`
+4. systemd + `activate-release-tsx.sh`
 5. Webhook Stripe: `https://tsx.book-store.com.pl/api/webhooks/stripe`
 
 ## Deploy

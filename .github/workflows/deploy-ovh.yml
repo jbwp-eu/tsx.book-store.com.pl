@@ -84,7 +84,7 @@ jobs:
           port: ${{ env.OVH_SSH_PORT }}
           username: ${{ env.DEPLOY_USER }}
           key: ${{ secrets.OVH_SSH_KEY }}
-          script: activate-release-ovh.sh ${{ github.sha }}
+          script: activate-release-tsx.sh ${{ github.sha }}
 
       - name: Smoke test (public URL)
         if: vars.DEPLOY_BASE_URL_OVH != ''
