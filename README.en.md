@@ -1,11 +1,14 @@
-# tsx.book-store.com.pl
+# [tsx.book-store.com.pl](http://tsx.book-store.com.pl)
 
 **Language:** [Polski](README.md) | English
 
 A full-stack online bookstore monorepo: **React 19** + **Vite** SPA with **Tailwind CSS v4**, **shadcn/ui**, **Redux Toolkit**, and **React Router v7**; **Express** REST API with **Sequelize**, **MySQL**, and **JWT**. Payments via **Stripe**; product images on **Google Cloud Storage**. End-to-end tests with **Cypress**.
 
-**Live (OVH):** https://tsx.book-store.com.pl/  
-**Live (Google Cloud):** https://tsx.book-store.website/
+**Live (OVH):** [https://tsx.book-store.com.pl/](https://tsx.book-store.com.pl/)
+
+or
+
+**Live (Google Cloud):** [https://tsx.book-store.website/](https://tsx.book-store.website/)
 
 ## What the app does
 
@@ -20,13 +23,13 @@ A full-stack online bookstore monorepo: **React 19** + **Vite** SPA with **Tailw
 
 ## Stack
 
-| Layer | Technologies |
-|--------|-------------|
-| **Backend** | Node.js, Express 5, TypeScript (`tsx`), Sequelize, MySQL, JWT, Stripe, Multer, Nodemailer, **@google-cloud/storage**, **@google-cloud/pubsub** |
-| **Frontend** | React 19, Vite, TypeScript, React Router, Redux Toolkit, Tailwind CSS 4, shadcn/ui, Formik + Yup, i18next, Stripe.js, Recharts |
-| **Data** | MySQL (local on VPS / Compute Engine), images on **GCS** |
-| **Deploy** | OVH VPS + Caddy; Google Cloud (VPC, Compute Engine, GCS, Cloud Function) — no LB / Autoscaling |
-| **Tests** | Cypress (e2e) |
+| Layer        | Technologies                                                                                                                                   |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Backend**  | Node.js, Express 5, TypeScript (`tsx`), Sequelize, MySQL, JWT, Stripe, Multer, Nodemailer, **@google-cloud/storage**, **@google-cloud/pubsub** |
+| **Frontend** | React 19, Vite, TypeScript, React Router, Redux Toolkit, Tailwind CSS 4, shadcn/ui, Formik + Yup, i18next, Stripe.js, Recharts                 |
+| **Data**     | MySQL (local on VPS / Compute Engine), images on **GCS**                                                                                       |
+| **Deploy**   | OVH VPS + Caddy; Google Cloud (VPC, Compute Engine, GCS, Cloud Function) — no LB / Autoscaling                                                 |
+| **Tests**    | Cypress (e2e)                                                                                                                                  |
 
 ## Repo structure
 
@@ -57,24 +60,24 @@ npm run seed   # optional
 npm run dev
 ```
 
-| Command | Description |
-| ------- | ----------- |
-| `npm run server` | backend (`tsx watch`) |
-| `npm run client` | frontend (Vite) |
-| `npm run build` | backend + frontend (production) |
-| `npm run start` | `node backend/dist/server.js` (also serves `frontend/dist`) |
-| `npm test` | Cypress |
+| Command          | Description                                                 |
+| ---------------- | ----------------------------------------------------------- |
+| `npm run server` | backend (`tsx watch`)                                       |
+| `npm run client` | frontend (Vite)                                             |
+| `npm run build`  | backend + frontend (production)                             |
+| `npm run start`  | `node backend/dist/server.js` (also serves `frontend/dist`) |
+| `npm test`       | Cypress                                                     |
 
 ## Deploy
 
-| Environment | Domain | Docs |
-| ---------- | ------ | ---- |
-| **OVH** | `tsx.book-store.com.pl` | [deploy-ovh/README.md](deploy-ovh/README.md) |
+| Environment      | Domain                   | Docs                                               |
+| ---------------- | ------------------------ | -------------------------------------------------- |
+| **OVH**          | `tsx.book-store.com.pl`  | [deploy-ovh/README.md](deploy-ovh/README.md)       |
 | **Google Cloud** | `tsx.book-store.website` | [deploy-gcloud/README.md](deploy-gcloud/README.md) |
 
 - **Images:** shared **Cloud Storage** bucket (OVH and GCP).
 - **Order email:** OVH — SMTP inside Node; Google — **Pub/Sub → Cloud Function**.
-- **Stripe:** `DEPLOY_TARGET` / `VITE_DEPLOY_TARGET` = `ovh` \| `google` and `*_TEST_MODE_OVH` / `*_TEST_MODE_GOOGLE` pairs.
+- **Stripe:** `DEPLOY_TARGET` / `VITE_DEPLOY_TARGET` = `ovh` `google` and `*_TEST_MODE_OVH` / `*_TEST_MODE_GOOGLE` pairs.
 
 Stripe webhooks:
 

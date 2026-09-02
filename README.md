@@ -4,7 +4,10 @@
 
 Full-stackowy sklep z książkami (monorepo): SPA **React 19** + **Vite** z **Tailwind CSS v4**, **shadcn/ui**, **Redux Toolkit** i **React Router v7**; REST API **Express** z **Sequelize**, **MySQL** i **JWT**. Płatności: **Stripe**; zdjęcia: **Google Cloud Storage**. Testy e2e: **Cypress**.
 
-**Live (OVH):** [https://tsx.book-store.com.pl/](https://tsx.book-store.com.pl/)  
+**Live (OVH):** [https://tsx.book-store.com.pl/](https://tsx.book-store.com.pl/)
+
+lub
+
 **Live (Google Cloud):** [https://tsx.book-store.website/](https://tsx.book-store.website/)
 
 ## Co robi aplikacja
@@ -20,13 +23,13 @@ Full-stackowy sklep z książkami (monorepo): SPA **React 19** + **Vite** z **Ta
 
 ## Stack
 
-| Warstwa | Technologie |
-| -------- | ------------- |
-| **Backend** | Node.js, Express 5, TypeScript (`tsx`), Sequelize, MySQL, JWT, Stripe, Multer, Nodemailer, **@google-cloud/storage**, **@google-cloud/pubsub** |
-| **Frontend** | React 19, Vite, TypeScript, React Router, Redux Toolkit, Tailwind CSS 4, shadcn/ui, Formik + Yup, i18next, Stripe.js, Recharts |
-| **Dane** | MySQL (lokalnie na VPS / Compute Engine), obrazy w **GCS** |
-| **Deploy** | OVH VPS + Caddy; Google Cloud (VPC, Compute Engine, GCS, Cloud Function) — bez LB / Auto Scaling |
-| **Testy** | Cypress (e2e) |
+| Warstwa      | Technologie                                                                                                                                    |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Backend**  | Node.js, Express 5, TypeScript (`tsx`), Sequelize, MySQL, JWT, Stripe, Multer, Nodemailer, **@google-cloud/storage**, **@google-cloud/pubsub** |
+| **Frontend** | React 19, Vite, TypeScript, React Router, Redux Toolkit, Tailwind CSS 4, shadcn/ui, Formik + Yup, i18next, Stripe.js, Recharts                 |
+| **Dane**     | MySQL (lokalnie na VPS / Compute Engine), obrazy w **GCS**                                                                                     |
+| **Deploy**   | OVH VPS + Caddy; Google Cloud (VPC, Compute Engine, GCS, Cloud Function) — bez LB / Auto Scaling                                               |
+| **Testy**    | Cypress (e2e)                                                                                                                                  |
 
 ## Struktura repo
 
@@ -57,24 +60,24 @@ npm run seed   # opcjonalnie
 npm run dev
 ```
 
-| Komenda | Opis |
-| ------- | ---- |
-| `npm run server` | backend (`tsx watch`) |
-| `npm run client` | frontend (Vite) |
-| `npm run build` | backend + frontend (produkcja) |
-| `npm run start` | `node backend/dist/server.js` (serwuuje też `frontend/dist`) |
-| `npm test` | Cypress |
+| Komenda          | Opis                                                         |
+| ---------------- | ------------------------------------------------------------ |
+| `npm run server` | backend (`tsx watch`)                                        |
+| `npm run client` | frontend (Vite)                                              |
+| `npm run build`  | backend + frontend (produkcja)                               |
+| `npm run start`  | `node backend/dist/server.js` (serwuuje też `frontend/dist`) |
+| `npm test`       | Cypress                                                      |
 
 ## Deploy
 
-| Środowisko | Domena | Dokumentacja |
-| ---------- | ------ | ------------ |
-| **OVH** | `tsx.book-store.com.pl` | [deploy-ovh/README.pl.md](deploy-ovh/README.pl.md) · [EN](deploy-ovh/README.md) |
+| Środowisko       | Domena                   | Dokumentacja                                                                             |
+| ---------------- | ------------------------ | ---------------------------------------------------------------------------------------- |
+| **OVH**          | `tsx.book-store.com.pl`  | [deploy-ovh/README.pl.md](deploy-ovh/README.pl.md) · [EN](deploy-ovh/README.md)          |
 | **Google Cloud** | `tsx.book-store.website` | [deploy-gcloud/README.pl.md](deploy-gcloud/README.pl.md) · [EN](deploy-gcloud/README.md) |
 
 - **Obrazy:** wspólny bucket **Cloud Storage** (OVH i GCP).
 - **Mail po płatności:** OVH — SMTP w procesie Node; Google — **Pub/Sub → Cloud Function**.
-- **Stripe:** `DEPLOY_TARGET` / `VITE_DEPLOY_TARGET` = `ovh` \| `google` oraz pary `*_TEST_MODE_OVH` / `*_TEST_MODE_GOOGLE`.
+- **Stripe:** `DEPLOY_TARGET` / `VITE_DEPLOY_TARGET` = `ovh` `google` oraz pary `*_TEST_MODE_OVH` / `*_TEST_MODE_GOOGLE`.
 
 Webhooki Stripe:
 
