@@ -13,9 +13,15 @@ import { NavLink } from "react-router-dom";
 import { Button } from "./ui/button";
 import UserButton from "./UserButton";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 const Navigation = () => {
   const { t } = useTranslation();
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  function closeSheet() {
+    setSheetOpen(false);
+  }
 
   return (
     <div>
@@ -31,7 +37,7 @@ const Navigation = () => {
         <UserButton />
       </nav>
       <nav className="sm:hidden">
-        <Sheet>
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger className="align-middle">
             <EllipsisVertical />
           </SheetTrigger>
@@ -44,12 +50,12 @@ const Navigation = () => {
               variant="ghost"
               className="justify-start border self-start"
             >
-              <NavLink to="/cart">
+              <NavLink to="/cart" onClick={closeSheet}>
                 <ShoppingCart />
                 {t("navigation.cart")}
               </NavLink>
             </Button>
-            <UserButton />
+            <UserButton onNavigate={closeSheet} />
           </SheetContent>
           <SheetDescription className="sr-only">
             description goes here

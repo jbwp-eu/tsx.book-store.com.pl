@@ -240,9 +240,14 @@ async function processOrderConfirmation(input) {
   const name = storeName || STORE_NAME;
   const from = `"${name}" <tsx@${DOMAIN}>`;
   const to = TO_3 ? `<${userEmail}>,<${TO_3}>` : `<${userEmail}>`;
-  const subject =
-    ln === "pl" ? "Potwierdzenie zamówienia" : "Order confirmation";
+  const isPl = ln === "pl";
   const idShort = String(orderId).slice(-6);
+  const subject = isPl
+    ? `[TEST] Potwierdzenie zakupu — zamówienie …${idShort}`
+    : `[TEST] Order confirmation — …${idShort}`;
+  const demoNotice = isPl
+    ? "Uwaga: to nie jest potwierdzenie prawdziwej płatności. Aplikacja jest demonstracyjna (tryb testowy Stripe); zamówienia nie są realizowane."
+    : "Note: this is not confirmation of a real payment. This is a demo app (Stripe test mode); orders are not fulfilled.";
 
   console.log(
     `[CloudFunction] Sending confirmation email for order ${orderId} to ${to}`
@@ -251,13 +256,14 @@ async function processOrderConfirmation(input) {
     from,
     to,
     subject,
-    html: `<h2>${subject}</h2>
+    html: `<h2>${isPl ? "Potwierdzenie zamówienia" : "Purchase Receipt"}</h2>
+      <p>${demoNotice}</p>
       <table>
-        <tr><th>${ln === "pl" ? "Nr zamówienia" : "Order ID"}</th><td>...${idShort}</td></tr>
-        <tr><th>${ln === "pl" ? "Data" : "Date"}</th><td>${date}</td></tr>
-        <tr><th>${ln === "pl" ? "Pozycje" : "Items"}</th><td>${itemsPrice}; PLN</td></tr>
-        <tr><th>${ln === "pl" ? "Dostawa" : "Shipping"}</th><td>${shippingNum.toFixed(2)}; PLN</td></tr>
-        <tr><th>${ln === "pl" ? "Zapłacono" : "Paid"}</th><td><b>${totalPrice}; PLN</b></td></tr>
+        <tr><th>${isPl ? "Nr zamówienia" : "Order ID"}</th><td>...${idShort}</td></tr>
+        <tr><th>${isPl ? "Data" : "Date"}</th><td>${date}</td></tr>
+        <tr><th>${isPl ? "Pozycje" : "Items"}</th><td>${itemsPrice}; PLN</td></tr>
+        <tr><th>${isPl ? "Dostawa" : "Shipping"}</th><td>${shippingNum.toFixed(2)}; PLN</td></tr>
+        <tr><th>${isPl ? "Zapłacono" : "Paid"}</th><td><b>${totalPrice}; PLN</b></td></tr>
       </table>`,
   });
 

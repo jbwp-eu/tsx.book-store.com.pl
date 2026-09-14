@@ -41,65 +41,103 @@ const CartPage = () => {
     navigate("/login?redirect=/shipping");
   }
 
+  function quantityControls(item: CartItem) {
+    return (
+      <div className="flex items-center justify-center shrink-0">
+        <Button
+          variant="outline"
+          size="icon"
+          className="size-8"
+          onClick={() => handleRemoveFromCart(item.id)}
+        >
+          <Minus />
+        </Button>
+        <span className="min-w-8 px-2 text-center">{item.quantity}</span>
+        <Button
+          variant="outline"
+          size="icon"
+          className="size-8"
+          onClick={() => handleAddToCart(item)}
+          disabled={item.countInStock === item.quantity}
+        >
+          <Plus />
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h2 className="h2-semibold py-4">{t("cart.title")}</h2>
       {cartItems.length === 0 ? (
         <Message info>{t("cart.message")}</Message>
       ) : (
-        <div className="grid sm:grid-cols-5 gap-x-4 gap-y-4">
-          <div className="sm:col-span-3">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t("cart.table_item")}</TableHead>
-                  <TableHead className="text-center">
-                    {t("cart.table_qty")}
-                  </TableHead>
-                  <TableHead className="text-right">
-                    {t("cart.table_price")}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {cartItems.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell>
-                      <NavLink
-                        to={`/product/${item.id}`}
-                        className="flex gap-4 items-center"
-                      >
-                        <Image image={item.images[0]} className="w-20" />
-                        <span className="font-medium px-2">{item.title}</span>
-                      </NavLink>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <div className="text-center">
-                        <Button
-                          variant="outline"
-                          onClick={() => handleRemoveFromCart(item.id)}
-                        >
-                          <Minus />
-                        </Button>
-                        <span className="px-2">{item.quantity}</span>
-                        <Button
-                          variant="outline"
-                          onClick={() => handleAddToCart(item)}
-                          disabled={item.countInStock === item.quantity}
-                        >
-                          <Plus />
-                        </Button>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
+        <div className="grid md:grid-cols-5 gap-x-4 gap-y-4">
+          <div className="md:col-span-3">
+            <ul className="md:hidden divide-y">
+              {cartItems.map((item) => (
+                <li key={item.id} className="space-y-3 py-4 first:pt-0">
+                  <NavLink
+                    to={`/product/${item.id}`}
+                    className="flex min-w-0 items-center gap-3"
+                  >
+                    <Image image={item.images[0]} className="w-16 shrink-0" />
+                    <span className="min-w-0 break-words font-medium">
+                      {item.title}
+                    </span>
+                  </NavLink>
+                  <div className="flex items-center justify-between gap-3">
+                    {quantityControls(item)}
+                    <span className="font-medium">
                       {formatCurrency(item.price)}
-                    </TableCell>
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <div className="hidden md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t("cart.table_item")}</TableHead>
+                    <TableHead className="text-center">
+                      {t("cart.table_qty")}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {t("cart.table_price")}
+                    </TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {cartItems.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="whitespace-normal">
+                        <NavLink
+                          to={`/product/${item.id}`}
+                          className="flex min-w-0 items-center gap-4"
+                        >
+                          <Image
+                            image={item.images[0]}
+                            className="w-20 shrink-0"
+                          />
+                          <span className="min-w-0 break-words px-2 font-medium">
+                            {item.title}
+                          </span>
+                        </NavLink>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {quantityControls(item)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(item.price)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
-          <Card className="sm:col-span-2 self-start min-h-40">
+          <Card className="md:col-span-2 self-start min-h-40">
             <CardContent>
               <div className="text-xl">
                 {t("cart.subtotal")}({itemsQuantity}):

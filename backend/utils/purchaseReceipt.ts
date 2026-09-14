@@ -36,12 +36,18 @@ async function sendSmtpPurchaseReceipt(
 
   const from = `"BookStore" <tsx@${domain}>`;
   const to = `<${to_1}>,<${to_3}>`;
-  const subject =
-    ln === "pl" ? "Potwierdzenie zamówienia" : "Order confirmation";
 
   const { id, totalPrice, itemsPrice, shippingPrice } = updatedOrder;
   const shippingPriceNum =
     typeof shippingPrice === "string" ? parseFloat(shippingPrice) : shippingPrice;
+  const isPl = ln === "pl";
+  const shortId = id.substring(id.length - 6);
+  const subject = isPl
+    ? `[TEST] Potwierdzenie zakupu — zamówienie …${shortId}`
+    : `[TEST] Order confirmation — …${shortId}`;
+  const demoNotice = isPl
+    ? "Uwaga: to nie jest potwierdzenie prawdziwej płatności. Aplikacja jest demonstracyjna (tryb testowy Stripe); zamówienia nie są realizowane."
+    : "Note: this is not confirmation of a real payment. This is a demo app (Stripe test mode); orders are not fulfilled.";
 
   const info = await transporter.sendMail({
     from,
@@ -50,10 +56,11 @@ async function sendSmtpPurchaseReceipt(
     html: `<head>
                 <meta charset="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <title>Purchase Receipt</title>
+                <title>${isPl ? "Potwierdzenie zamówienia" : "Purchase Receipt"}</title>
                 <style>
                   h2 { color: gray; }
                   section { padding: 5px; }
+                  p { color: grey; }
                   table { width: 90%; }
                   th { font-weight: 400; text-align: left; color: grey; }
                   td { font-weight: 300; color: grey; text-align: right; }
@@ -64,8 +71,9 @@ async function sendSmtpPurchaseReceipt(
             <body>
               <section>
                 <h2>${
-                  ln === "pl" ? "Potwierdzenie zamówienia" : "Purchase Receipt"
+                  isPl ? "Potwierdzenie zamówienia" : "Purchase Receipt"
                 }</h2>
+                <p>${demoNotice}</p>
                 <table>
                   <tr>
                     <th>${ln === "pl" ? "Nr zamówienia" : "Order ID:"}</th>
