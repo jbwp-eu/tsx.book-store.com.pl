@@ -521,6 +521,8 @@ const dictionary: Dictionary = {
     detailsPL: "Szczegóły",
     delete_text: "Delete",
     delete_textPL: "Usuń",
+    deleted_user: "Deleted user",
+    deleted_userPL: "Usunięty użytkownik",
   },
   usersList: {
     title: "Users",
@@ -652,6 +654,8 @@ const dictionary: Dictionary = {
     detailsPL: "Szczegóły",
     chart_orders_value: "Orders value",
     chart_orders_valuePL: "Wartość zamówień",
+    deleted_user: "Deleted user",
+    deleted_userPL: "Usunięty użytkownik",
   },
   search: {
     search_text: "Search",

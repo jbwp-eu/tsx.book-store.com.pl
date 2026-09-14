@@ -196,7 +196,7 @@ const OverviewPage = () => {
                         <TableRow>
                           <TableHead>{t("overview.buyer")}</TableHead>
                           <TableCell className="text-left">
-                            {order.User!.name}
+                            {order.User?.name ?? t("overview.deleted_user")}
                           </TableCell>
                         </TableRow>
                         <TableRow>
@@ -249,7 +249,7 @@ const OverviewPage = () => {
                     {orders.map((order) => (
                       <TableRow key={order.id}>
                         <TableCell className="text-center">
-                          {order.User!.name}
+                          {order.User?.name ?? t("overview.deleted_user")}
                         </TableCell>
                         <TableCell className="text-center">
                           {formateDate(order.createdAt)}

@@ -1,6 +1,7 @@
 import Message from "@/components/Message";
 import {
   NavLink,
+  redirect,
   useLoaderData,
   useSubmit,
   type ActionFunctionArgs,
@@ -72,6 +73,13 @@ const OrdersListPage = () => {
 
   if ("message" in data) {
     content = <Message info>{data.message}</Message>;
+  } else if (data.orders.length === 0) {
+    content = (
+      <div>
+        <h2 className="h2-semibold py-4">{t("ordersList.title")}</h2>
+        <Message info>{t("ordersList.noOrders")}</Message>
+      </div>
+    );
   } else {
     content = (
       <div>
@@ -105,7 +113,7 @@ const OrdersListPage = () => {
               <TableRow key={order.id} className="even:bg-gray-50">
                 <TableCell>{formatId(order.id)}</TableCell>
                 <TableCell className="text-center">
-                  {order.User!.name}
+                  {order.User?.name ?? t("ordersList.deleted_user")}
                 </TableCell>
                 <TableCell className="text-center">
                   {new Date(order.createdAt).toLocaleString()}
@@ -155,7 +163,7 @@ const OrdersListPage = () => {
 
 const action =
   (language: string) =>
-  async ({ request }: ActionFunctionArgs) => {
+  async ({ request, params }: ActionFunctionArgs) => {
     const { id } = await request.json();
     const { method } = request;
     const token = localStorage.getItem("token");
@@ -173,10 +181,22 @@ const action =
     if (!response.ok) {
       const resData = await response.json();
       toast.error(resData.message);
-    } else {
-      const resData = await response.json();
-      toast.success(resData.message);
+      return null;
     }
+
+    const resData = (await response.json()) as {
+      message: string;
+      pages?: number;
+    };
+    toast.success(resData.message);
+
+    const currentPage = Number(params.pageNumber) || 1;
+    const pages = resData.pages ?? 0;
+    if (pages <= 1) {
+      return redirect("/admin/ordersList");
+    }
+    const nextPage = Math.min(currentPage, pages);
+    return redirect(`/admin/ordersList/page/${nextPage}`);
   };
 
 OrdersListPage.action = action;

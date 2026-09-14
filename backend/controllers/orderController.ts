@@ -180,7 +180,7 @@ export const getOrders = async (
   next: NextFunction
 ): Promise<void> => {
   const pageSize = Number(process.env.PAGINATION_LIMIT);
-  const { language, pageNumber } = req.query as { language?: string; pageNumber?: string };
+  const { pageNumber } = req.query as { pageNumber?: string };
 
   let page: number;
   if (!pageNumber || pageNumber === "undefined") {
@@ -197,16 +197,10 @@ export const getOrders = async (
       order: [["createdAt", "DESC"]],
     });
 
-    if (rows.length === 0) {
-      res.status(404);
-      throw new Error(
-        language === "en" ? "Orders not found" : "Nie znaleziono zamówień"
-      );
-    } else {
-      res
-        .status(200)
-        .json({ orders: rows, pages: Math.ceil(count / pageSize) });
-    }
+    res.status(200).json({
+      orders: rows,
+      pages: Math.ceil(count / pageSize),
+    });
   } catch (err) {
     next(err);
   }
@@ -229,9 +223,12 @@ export const deleteOrder = async (
       );
     } else {
       await order.destroy();
+      const pageSize = Number(process.env.PAGINATION_LIMIT);
+      const count = await Order.count();
       res.json({
         message:
           language === "en" ? "Order deleted" : "Zamówienie zostało usunięte",
+        pages: Math.ceil(count / pageSize),
       });
     }
   } catch (err) {
